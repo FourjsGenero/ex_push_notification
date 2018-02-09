@@ -4,6 +4,9 @@
 
 This demo shows how to implement push notification with Google Cloud Messaging (GCM) and with Apple Push Notifications (APNs).
 
+The sources of this demo have been used to write the
+ [Genero push notification section of the documentation](http://4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_fgl_mobile_push_notifications.html)
+
 The demo uses by default an SQLite database named "tokendb".
 
 If this DB file does not exist, token_maintainer.4gl will create it.
@@ -59,8 +62,7 @@ In the app, tap unregister button.
 If not executing the server programs on Mac, get the root certificate for Apple and set security.global.ca in fglprofile with that file name (apple_entrust_root_certification_authority.pem)
 
 On a Mac, create a APNs certificate for you app, to get the public certificate and the private key (decrypted) .crt .pem
-For more details about creating, see BDL documentation, in the index search for APNS SSL certificate or go directly to this link:
-https://www.4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_gws_ComAPNS_security.html
+For more details, see [Genero documentation section about APNS SSL certificates](https://www.4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_gws_ComAPNS_security.html)
 
 Setup fglprofile entries to specify the certificate file and private key file:
 ```
