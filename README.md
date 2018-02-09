@@ -60,7 +60,7 @@ If not executing the server programs on Mac, get the root certificate for Apple 
 
 On a Mac, create a APNs certificate for you app, to get the public certificate and the private key (decrypted) .crt .pem
 For more details about creating, see BDL documentation, in the index search for APNS SSL certificate or go directly to this link:
-https://www.4js.com/online_documentation/fjs-fgl-manual-html/#c_gws_ComAPNS_security.html
+https://www.4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_gws_ComAPNS_security.html
 
 Setup fglprofile entries to specify the certificate file and private key file:
 ```
