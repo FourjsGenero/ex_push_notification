@@ -31,11 +31,13 @@ The token maintainer must be started first, to collect device registration reque
 
 ## Using Google Could Messaging
 
+### Prepare for GCM
+
 Create a GCM project at Google to get API Key and Sender ID.
 
-### Build the Android app
+Read the topic about GCM in the [Genero documentation](http://4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_fgl_mobile_push_notif_gcm.html)
 
-Setup env to build an Android app with GMA build tool (see build_gma.sh)
+### Build the Android app
 
 Plug your Android device.
 
@@ -47,6 +49,8 @@ In main.4gl:
 * Define the REG_PORT with the port used by token_maintainer.
 
 #### With make
+
+Setup env to build an Android app with GMA build tool (see build_gma.sh)
 
 ```
 $ make clean all
@@ -60,7 +64,7 @@ $ make package_gma
 * Setup GST Android SDK environment
 * Enable the pushdemo_android packaging rules
 * Build all
-* Install the APK created in 
+* Install the APK created in the build/packages directory
 
 ### Build the server programs
 
@@ -98,9 +102,11 @@ $ make clean all
 
 ## Using Apple Push Notification service
 
-### Build the iOS app
+### Prepare for APNS
 
-Setup env to build an iOS app with GMI build tool (see build_gmi.sh)
+Read the topics about APNS in the [Genero documentation](http://4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_fgl_mobile_push_notif_apns.html)
+
+### Build the iOS app
 
 Plug your iOS device.
 
@@ -112,6 +118,8 @@ In main.4gl:
 * Define the REG_PORT with the port used by token_maintainer.
 
 #### With make
+
+Setup env to build an iOS app with GMI build tool (see build_gmi.sh)
 
 ```
 $ make clean all
@@ -125,7 +133,7 @@ $ make package_gmi
 * Setup GST iOS developer environment
 * Enable the pushdemo_ios packaging rules
 * Build all
-* Install the IPA create in
+* Install the IPA created in the build/packages directory
 
 
 ### Build the server programs
