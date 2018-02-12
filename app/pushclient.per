@@ -1,0 +1,42 @@
+ACTION DEFAULTS
+ACTION notificationpushed (DEFAULTVIEW=NO)
+END
+LAYOUT (TEXT="Push client")
+GRID
+{
+Token maintainer:
+Host: [tmh                      ]
+Port: [tmp                      ]
+Notifications:
+Sender ID: [sid                 ]
+User Name: [unm                 ]
+[b1            |b2              ]
+Token:
+[rt                             ]
+[                               ]
+[                               ]
+[b3                             ]
+<TABLE t1                       >
+[c1          |c2                ]
+[c1          |c2                ]
+[c1          |c2                ]
+[c1          |c2                ]
+<                               >
+}
+END
+END
+ATTRIBUTES
+EDIT tmh = FORMONLY.tm_host, SCROLL;
+EDIT tmp = FORMONLY.tm_port;
+EDIT unm = FORMONLY.user_name;
+EDIT sid = FORMONLY.sender_id, SCROLL;
+BUTTON b1: register, TEXT="Register";
+BUTTON b2: unregister, TEXT="Unregister";
+BUTTON b3: clean, TEXT="Clear log";
+TEXTEDIT rt = FORMONLY.registration_token, NOENTRY;
+EDIT c1 = FORMONLY.info, SCROLL;
+EDIT c2 = FORMONLY.ts, SCROLL;
+END
+INSTRUCTIONS
+SCREEN RECORD sr(FORMONLY.info,FORMONLY.ts);
+END

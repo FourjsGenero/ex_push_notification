@@ -1,0 +1,21 @@
+ACTION DEFAULTS
+   ACTION send_notification (ACCELERATOR=ENTER, ACCELERATOR2=RETURN)
+END
+LAYOUT (TEXT="APNs push provider program")
+GRID
+{
+Message:      [f1                                    ]
+User data:    [f2                                    ]
+              [b1                                    ]
+Result:       [f3                                    ]
+              [                                      ]
+              [                                      ]
+}
+END
+END
+ATTRIBUTES
+EDIT f1 = FORMONLY.msg_title, SCROLL;
+EDIT f2 = FORMONLY.user_data, SCROLL;
+BUTTON b1: send_notification, TEXT="Send";
+TEXTEDIT f3 = FORMONLY.info, STRETCH=BOTH;
+END

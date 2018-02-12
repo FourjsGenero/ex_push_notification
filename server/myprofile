@@ -1,0 +1,8 @@
+
+# Apple root certificate only needed when running server programs
+# on a Unix or Windows server: On Mac WS read the local Keychain.
+
+security.global.ca = "../../apple_entrust_root_certification_authority.pem"
+security.global.certificate = "../../pushdemo.crt"
+security.global.privatekey  = "../../pushdemo-key-noenc.pem"
+

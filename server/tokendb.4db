@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Schema gstVersion="30a07" id="{9473ac88-236e-4d57-aceb-fb332a1908c5}" version="4.0">
+  <AGSettings version="1.1">
+    <DynamicProperties version="2">
+      <DynamicProperty description="Associated label when generating form" initialValue="" isDefaultInherited="false" isHidden="false" label="Label" name="label" readOnly="false" type="TEXT"/>
+      <DynamicProperty description="Associated widget" editorInfo="contains:ButtonEdit|CheckBox|ComboBox|DateEdit|DateTimeEdit|Edit|FFImage|FFLabel|Field|Phantom|ProgressBar|RadioGroup|Slider|SpinEdit|TextEdit|TimeEdit" initialValue="Edit" isDefaultInherited="false" isHidden="false" label="Widget" name="widget" readOnly="false" type="ENUM"/>
+      <DynamicPropertyGroup collapsed="false" description="Formfied properties" label="Formfield" name="formfieldGroup" properties="label;widget"/>
+    </DynamicProperties>
+    <NodeInfos version="1">
+      <NodeInfo mimeType="db/column" properties="widget;label"/>
+    </NodeInfos>
+  </AGSettings>
+  <ExtractionSettings/>
+  <Table active="true" name="tokens" status="U" uuid="db/table2">
+    <Column fglLength="4" fglType="2" name="id" notNull="true" order="1" status="U" uuid="db/column2"/>
+    <Column fglLength="150" fglType="201" name="sender_id" notNull="false" order="2" status="U" uuid="db/column4"/>
+    <Column fglLength="250" fglType="201" name="registration_token" notNull="true" order="3" status="U" uuid="db/column6"/>
+    <Column fglLength="4" fglType="2" name="badge_number" notNull="true" order="4" status="U" uuid="db/column8"/>
+    <Column fglLength="50" fglType="201" name="app_user" notNull="true" order="5" status="U" uuid="db/column10"/>
+    <Column fglLength="4365" fglType="10" name="reg_date" notNull="true" order="6" status="U" uuid="db/column12"/>
+  </Table>
+  <Views ActiveView="View-1" showLabels="true">
+    <View Name="View-1">
+      <Layout>
+        <![CDATA[AAAAAgAAABIAZABiAC8AdABhAGIAbABlADJANQAAAAAAAEBBgAAAAAAAP2iTdLxqfvoB]]>
+      </Layout>
+    </View>
+  </Views>
+</Schema>
