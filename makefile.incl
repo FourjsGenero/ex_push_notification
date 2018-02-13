@@ -1,18 +1,8 @@
 .SUFFIXES: .42s .42f .42m .42r .str .per .4gl .msg .iem
 
-ifdef FGLLDPATH
-FGLENV1 = FGLLDPATH=$(FGLLDPATH)
-endif
-
-ifdef FGLDBPATH
-FGLENV2 = FGLDBPATH=$(FGLDBPATH)
-endif
-
-FGLENV = $(FGLENV1) $(FGLENV2)
-
 FGLCOMPFLAGS = --resolve-calls -M -W all -Wno-stdsql
-FGLCOMP  = $(FGLENV) fglcomp $(FGLCOMPFLAGS)
-FGLRUN   = $(FGLENV) fglrun
+FGLCOMP  = fglcomp $(FGLCOMPFLAGS)
+FGLRUN   = fglrun
 FGLFORM  = fglform -M
 FGLMKSTR = fglmkstr
 

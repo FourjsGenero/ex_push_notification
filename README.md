@@ -41,7 +41,7 @@ Read the topic about GCM in the [Genero documentation](http://4js.com/online_doc
 
 Plug your Android device.
 
-Go to the app sub-directory.
+Go to the `app` sub-directory.
 
 In main.4gl:
 * Define the GCM_SENDER_ID constant with the GCM Sender ID.
@@ -68,7 +68,7 @@ $ make package_gma
 
 ### Build the server programs
 
-Go to the server sub-directory.
+Go to the `server` sub-directory.
 
 In gcm_push_server.4gl:
 * Define the GCM_API_KEY constant with the GCM API KEY.
@@ -110,7 +110,7 @@ Read the topics about APNS in the [Genero documentation](http://4js.com/online_d
 
 Plug your iOS device.
 
-Go to the app sub-directory.
+Go to the `app` sub-directory.
 
 In main.4gl:
 * Define the GCM_SENDER_ID constant as ""
@@ -120,6 +120,13 @@ In main.4gl:
 #### With make
 
 Setup env to build an iOS app with GMI build tool (see build_gmi.sh)
+
+Define the following environment variables:
+
+* GMIDEVICE: The iOS device ID.
+* GMICERTIFICATE: The certificate.
+* GMIPROVISIONING: The provisioning profile for your app.
+
 
 ```
 $ make clean all
@@ -138,12 +145,17 @@ $ make package_gmi
 
 ### Build the server programs
 
-Go to the server sub-directory.
+Go to the `server` sub-directory.
 
 In token_maintainer.4gl:
 * Define the DEFAULT_PORT constant with the TCP port number to be used in FGLAPPSERVER.
 
 #### Define security entries in FGLPROFILE
+
+On a Mac, create a APNs certificate for you app, to get the public certificate
+and the private key (decrypted) .crt .pem file.
+For more details, see
+[Genero documentation section about APNS SSL certificates](https://www.4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_gws_ComAPNS_security.html)
 
 Create your fglprofile file, define FGLPROFILE to point to this file.
 
@@ -151,23 +163,19 @@ Create your fglprofile file, define FGLPROFILE to point to this file.
 $ export FGLPROFILE=myprofile 
 ```
 
-Edit the fglprofile file to define the security entries to access Apple servers.
-
-If not executing the server programs on Mac, get the root certificate for Apple and set security.global.ca in fglprofile with that file name (apple_entrust_root_certification_authority.pem)
-
-```
-security.global.ca = "apple_entrust_root_certification_authority.pem"
-```
-
-On a Mac, create a APNs certificate for you app, to get the public certificate and the private key (decrypted) .crt .pem
-For more details, see [Genero documentation section about APNS SSL certificates](https://www.4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_gws_ComAPNS_security.html)
-
-Setup the fglprofile entries to specify the certificate file and private key file:
+Setup the Web Services `security` entries to specify the certificate file and private key file:
 
 ```
 security.global.certificate = "pusher.crt"
 security.global.privatekey  = "pusher_priv.pem"
 ```
+
+> If not executing the server programs on Mac, get the root certificate for Apple
+> and set the `security.global.ca` entry in fglprofile with that file name:
+> 
+> ```
+> security.global.ca = "apple_entrust_root_certification_authority.pem"
+> ```
 
 #### With make
 
