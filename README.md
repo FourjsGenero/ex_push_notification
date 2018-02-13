@@ -16,8 +16,8 @@ If this DB file does not exist, token_maintainer.4gl will create it.
 You can switch between GCM and APNs technos with the same token database:
 The programs check for the sender_id, which is specific to GCM.
 
-The token_maintainer.4gl program is a Web Service program and should normally be running behing a GAS. For development/test purpose, it can be run standalone.
-
+The token_maintainer.4gl program is a Web Service program and should normally be running behing a GAS.
+For development/test purpose, it can be run standalone.
 The token maintainer must be started first, to collect device registration requests.
 
 ![Push notification workflow](https://github.com/FourjsGenero/ex_push_notification/raw/master/docs/push-workflow.png)
@@ -92,13 +92,17 @@ $ make clean all
 
 ### Test GCM
 
-* On the server: Start the token_maintainer (fglrun token_maintainer)
-* On the server: Start the GCM push server (fglrun gcm_push_server) - has GUI interface!
-* On the Android device: Start the app
-* On the Android device: Tap register button, you should get a registration token
-* On the server: Go to the GCM push server program and click the send button
-* On the Android device: Check that the notification arrives on the device
-* On the Android device the app, tap unregister button
+* On the server
+ * Start the token_maintainer in background (fglrun token_maintainer &)
+ * Start the GCM push server (fglrun gcm_push_server) - has GUI interface!
+* On the Android device:
+ * Start the app
+ * Tap register button, you should get a registration token
+* On the server:
+ * Go to the GCM push server program and click the send button
+* On the Android device:
+ * Check that the notification arrives on the device
+ * Tap unregister button
 
 ## Using Apple Push Notification service
 
@@ -170,14 +174,12 @@ security.global.certificate = "pusher.crt"
 security.global.privatekey  = "pusher_priv.pem"
 ```
 
-<aside class="notice">
 If not executing the server programs on Mac, get the root certificate for Apple
 and set the `security.global.ca` entry in fglprofile with that file name:
 
 ```
 security.global.ca = "apple_entrust_root_certification_authority.pem"
 ```
-</aside>
 
 #### With make
 
@@ -195,10 +197,14 @@ $ make clean all
 
 ### Test APNS
 
-* On the server: Start the token_maintainer with APNS argument (fglrun token_maintainer APNS)
-* On the server: Start the APNs push provider (fglrun apns_push_provider) - has GUI interface!
-* On the iOS device: Start the app on iOS
-* On the iOS device: Tap register button, you should get a registration token
-* On the server: Go to the APNs push provider program and click the send button
-* On the iOS device: Check that the notification arrives on the device
-* on the iOS device: Tap unregister button
+* On the server:
+ * Start the token_maintainer in background (fglrun token_maintainer &)
+ * Start the APNs push provider (fglrun apns_push_provider) - has GUI interface!
+* On the iOS device:
+ * Start the app on iOS
+ * Tap register button, you should get a registration token
+* On the server:
+ * Go to the APNs push provider program and click the send button
+* On the iOS device:
+ * Check that the notification arrives on the device
+ * Tap unregister button
