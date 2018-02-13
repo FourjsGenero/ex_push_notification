@@ -92,17 +92,17 @@ $ make clean all
 
 ### Test GCM
 
-* On the server
- * Start the token_maintainer in background (fglrun token_maintainer &)
- * Start the GCM push server (fglrun gcm_push_server) - has GUI interface!
-* On the Android device:
- * Start the app
- * Tap register button, you should get a registration token
-* On the server:
- * Go to the GCM push server program and click the send button
-* On the Android device:
- * Check that the notification arrives on the device
- * Tap unregister button
+1. On the server
+   * Start the token_maintainer in background (fglrun token_maintainer &)
+   * Start the GCM push server (fglrun gcm_push_server) - has GUI interface!
+2. On the Android device:
+   * Start the app
+   * Tap register button, you should get a registration token
+3. On the server:
+   * Go to the GCM push server program and click the send button
+4. On the Android device:
+   * Check that the notification arrives on the device
+   * Tap unregister button
 
 ## Using Apple Push Notification service
 
@@ -197,14 +197,14 @@ $ make clean all
 
 ### Test APNS
 
-* On the server:
- * Start the token_maintainer in background (fglrun token_maintainer &)
- * Start the APNs push provider (fglrun apns_push_provider) - has GUI interface!
-* On the iOS device:
- * Start the app on iOS
- * Tap register button, you should get a registration token
-* On the server:
- * Go to the APNs push provider program and click the send button
-* On the iOS device:
- * Check that the notification arrives on the device
- * Tap unregister button
+1. On the server:
+   * Start the token_maintainer in background (fglrun token_maintainer &)
+   * Start the APNs push provider (fglrun apns_push_provider) - has GUI interface!
+2. On the iOS device:
+   * Start the app on iOS
+   * Tap register button, you should get a registration token
+3. On the server:
+   * Go to the APNs push provider program and click the send button
+4. On the iOS device:
+   * Check that the notification arrives on the device
+   * Tap unregister button
