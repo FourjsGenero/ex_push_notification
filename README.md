@@ -170,12 +170,14 @@ security.global.certificate = "pusher.crt"
 security.global.privatekey  = "pusher_priv.pem"
 ```
 
-> If not executing the server programs on Mac, get the root certificate for Apple
-> and set the `security.global.ca` entry in fglprofile with that file name:
-> 
-> ```
-> security.global.ca = "apple_entrust_root_certification_authority.pem"
-> ```
+<aside class="notice">
+If not executing the server programs on Mac, get the root certificate for Apple
+and set the `security.global.ca` entry in fglprofile with that file name:
+
+```
+security.global.ca = "apple_entrust_root_certification_authority.pem"
+```
+</aside>
 
 #### With make
 
