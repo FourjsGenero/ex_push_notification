@@ -1,10 +1,10 @@
 ACTION DEFAULTS
    ACTION send_notification (ACCELERATOR=ENTER, ACCELERATOR2=RETURN)
 END
-LAYOUT (TEXT="GCM push server program")
+LAYOUT (TEXT="FCM push server program")
 GRID
 {
-GCM API key:  [f1                                    ]
+Server key:   [f1                                    ]
 Message:      [f2                                    ]
 User data:    [f3                                    ]
               [b1                                    ]
@@ -15,7 +15,7 @@ Result:       [f4                                    ]
 END
 END
 ATTRIBUTES
-EDIT f1 = FORMONLY.api_key, SCROLL;
+EDIT f1 = FORMONLY.server_key, SCROLL;
 EDIT f2 = FORMONLY.msg_title, SCROLL;
 EDIT f3 = FORMONLY.user_data, SCROLL;
 BUTTON b1: send_notification, TEXT="Send";

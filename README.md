@@ -2,7 +2,7 @@
 
 ## Description
 
-This demo shows how to implement push notification with Google Cloud Messaging (GCM) and with Apple Push Notifications (APNs).
+This demo shows how to implement push notification with Firebase Cloud Messaging (FCM) and with Apple Push Notifications (APNs).
 
 The sources of this demo have been used to write the
  [Genero push notification section of the documentation](http://4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_fgl_mobile_push_notifications.html)
@@ -13,8 +13,8 @@ The demo uses by default an SQLite database named "tokendb".
 
 If this DB file does not exist, token_maintainer.4gl will create it.
 
-You can switch between GCM and APNs technos with the same token database:
-The programs check for the sender_id, which is specific to GCM.
+You can switch between FCM and APNs technos with the same token database:
+The programs check for the sender_id, which is specific to FCM.
 
 The token_maintainer.4gl program is a Web Service program and should normally be running behing a GAS.
 For development/test purpose, it can be run standalone.
@@ -24,18 +24,21 @@ The token maintainer must be started first, to collect device registration reque
 
 ## Prerequisites
 
-* Genero BDL 3.10.11+
+* Genero BDL 3.10.18+
+* Genero Mobile for Android 1.30.18+
+* Genero Mobile for iOS 1.30.14+
 * Genero Desktop Client 3.10+
 * Genero Studio 3.10+
 * GNU Make
 
-## Using Google Could Messaging
+## Using Firebase Could Messaging
 
-### Prepare for GCM
+### Prepare for FCM
 
-Create a GCM project at Google to get API Key and Sender ID.
+In the FCM console (https://console.firebase.google.com), create a new project,
+get the Server Key and the google-services.json configuration file.
 
-Read the topic about GCM in the [Genero documentation](http://4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_fgl_mobile_push_notif_gcm.html)
+For more details, see the topic about FCM in the [Genero documentation](http://4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_fgl_mobile_push_notif_gcm.html)
 
 ### Build the Android app
 
@@ -43,8 +46,9 @@ Plug your Android device.
 
 Go to the `app` sub-directory.
 
+Copy the google-services.json configuration file in the `app/resources/android` directory.
+
 In main.4gl:
-* Define the GCM_SENDER_ID constant with the GCM Sender ID.
 * Define the REG_SERVER constant with the hostname where the token_maintainer runs.
 * Define the REG_PORT with the port used by token_maintainer.
 
@@ -70,8 +74,8 @@ $ make package_gma
 
 Go to the `server` sub-directory.
 
-In gcm_push_server.4gl:
-* Define the GCM_API_KEY constant with the GCM API KEY.
+In fcm_push_server.4gl:
+* Define the FCM_SERVER_KEY constant with the FCM Server Key.
 
 In token_maintainer.4gl:
 * Define the DEFAULT_PORT constant with the TCP port number to be used in FGLAPPSERVER.
@@ -87,19 +91,19 @@ $ make clean all
 * Setup GST Desktop environment
 * Open the token_maintainer.4pw project
 * Build all
-* Open the gcm.4pw project
+* Open the fcm.4pw project
 * Build all
 
-### Test GCM
+### Test FCM
 
 1. On the server
    * Start the token_maintainer in background (fglrun token_maintainer &)
-   * Start the GCM push server (fglrun gcm_push_server) - has GUI interface!
+   * Start the FCM push server (fglrun fcm_push_server) - has GUI interface!
 2. On the Android device:
    * Start the app
    * Tap register button, you should get a registration token
 3. On the server:
-   * Go to the GCM push server program and click the send button
+   * Go to the FCM push server program and click the send button
 4. On the Android device:
    * Check that the notification arrives on the device
    * Tap unregister button
@@ -117,7 +121,6 @@ Plug your iOS device.
 Go to the `app` sub-directory.
 
 In main.4gl:
-* Define the GCM_SENDER_ID constant as ""
 * Define the REG_SERVER constant with the hostname where the token_maintainer runs.
 * Define the REG_PORT with the port used by token_maintainer.
 

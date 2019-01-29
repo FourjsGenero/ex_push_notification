@@ -18,6 +18,7 @@ $(APPDIR): $(BUILDDIR)
 
 appdir:: all $(APPDIR)
 	rm -rf $(APPDIR)/*
+	$(CP) resources/android/google-services.json $(APPDIR)
 	$(CP) $(FORMS) $(APPDIR)
 	$(CP) $(MAIN) $(APPDIR)
 

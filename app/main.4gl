@@ -2,9 +2,7 @@ IMPORT com
 IMPORT util
 IMPORT os
 
-CONSTANT GCM_SENDER_ID = "" -- Put your Sender ID for GCM, live blank for APNs.
-
-CONSTANT REG_SERVER = "orion"  -- Change to your hostname
+CONSTANT REG_SERVER = "toro"  -- Change to your hostname
 CONSTANT REG_PORT = 9999
 
 DEFINE notifs DYNAMIC ARRAY OF RECORD
@@ -16,7 +14,6 @@ DEFINE rec RECORD
            tm_host STRING,
            tm_port INTEGER,
            user_name STRING,
-           sender_id STRING,
            registration_token STRING
        END RECORD
 
@@ -31,7 +28,6 @@ MAIN
     DIALOG ATTRIBUTES(UNBUFFERED)
       INPUT BY NAME rec.tm_host,
                     rec.tm_port,
-                    rec.sender_id,
                     rec.user_name,
                     rec.registration_token
             ATTRIBUTES(WITHOUT DEFAULTS)
@@ -39,14 +35,14 @@ MAIN
       DISPLAY ARRAY notifs TO sr.*
       END DISPLAY
       ON ACTION register
-         LET rec.registration_token = register(rec.sender_id, rec.user_name)
+         LET rec.registration_token = register(rec.user_name)
          CALL save_settings()
       ON ACTION unregister
-         CALL unregister(rec.sender_id, rec.registration_token, rec.user_name)
+         CALL unregister(rec.registration_token, rec.user_name)
          LET rec.registration_token = NULL
          CALL save_settings()
       ON ACTION notificationpushed
-         LET x=handle_notification(rec.sender_id)
+         LET x=handle_notification()
          CALL DIALOG.setCurrentRow("sr",x)
       ON ACTION clean
          CALL DIALOG.deleteAllRows("sr")
@@ -78,7 +74,6 @@ FUNCTION load_settings()
        LET rec.tm_host = REG_SERVER
        LET rec.tm_port = REG_PORT
        LET rec.user_name = "mike"
-       LET rec.sender_id = GCM_SENDER_ID
     END IF
 END FUNCTION
 
@@ -93,15 +88,14 @@ FUNCTION save_settings()
     CALL ch.close()
 END FUNCTION
 
-FUNCTION register(sender_id, app_user)
-    DEFINE sender_id STRING,
-           app_user STRING
+FUNCTION register(app_user)
+    DEFINE app_user STRING
     DEFINE registration_token STRING
     TRY
         CALL ui.Interface.frontCall(
                 "mobile", "registerForRemoteNotifications", 
-                [ sender_id ], [ registration_token ] )
-        IF tm_command( "register", sender_id, registration_token, app_user, 0 ) < 0 THEN
+                [ ], [ registration_token ] )
+        IF tm_command( "register", registration_token, app_user, 0 ) < 0 THEN
            RETURN NULL
         END IF
     CATCH
@@ -112,17 +106,16 @@ FUNCTION register(sender_id, app_user)
     RETURN registration_token
 END FUNCTION
 
-FUNCTION unregister(sender_id, registration_token, app_user)
-    DEFINE sender_id STRING,
-           registration_token STRING,
+FUNCTION unregister(registration_token, app_user)
+    DEFINE registration_token STRING,
            app_user STRING
-    IF tm_command( "unregister", sender_id, registration_token, app_user, 0 ) < 0 THEN
+    IF tm_command( "unregister", registration_token, app_user, 0 ) < 0 THEN
        RETURN
     END IF
     TRY
         CALL ui.Interface.frontCall(
                 "mobile", "unregisterFromRemoteNotifications", 
-                [ sender_id ], [ ] )
+                [ ], [ ] )
     CATCH
         MESSAGE "Un-registration failed (broacast service)."
         RETURN
@@ -130,9 +123,8 @@ FUNCTION unregister(sender_id, registration_token, app_user)
     MESSAGE "Un-registration succeeded"
 END FUNCTION
 
-FUNCTION tm_command( command, sender_id, registration_token, app_user, badge_number )
+FUNCTION tm_command( command, registration_token, app_user, badge_number )
     DEFINE command STRING,
-           sender_id STRING,
            registration_token STRING,
            app_user STRING,
            badge_number INTEGER
@@ -154,7 +146,6 @@ FUNCTION tm_command( command, sender_id, registration_token, app_user, badge_num
         CALL req.setConnectionTimeOut(5)
         CALL req.setTimeOut(5)
         LET json_obj = util.JSONObject.create()
-        CALL json_obj.put("sender_id", sender_id)
         CALL json_obj.put("registration_token", registration_token)
         CALL json_obj.put("app_user", app_user)
         CALL json_obj.put("badge_number", badge_number)
@@ -193,16 +184,14 @@ FUNCTION setup_badge_number(consumed)
        LET badge_number = badge_number - consumed
     END IF
     CALL ui.Interface.frontCall("ios", "setBadgeNumber", [badge_number], [])
-    IF tm_command( "badge_number",
-                   rec.sender_id, rec.registration_token,
+    IF tm_command( "badge_number", rec.registration_token,
                    rec.user_name, badge_number) < 0 THEN
        ERROR "Could not send new badge number to token maintainer."
        RETURN
     END IF
 END FUNCTION
 
-FUNCTION handle_notification(sender_id)
-    DEFINE sender_id STRING
+FUNCTION handle_notification()
     DEFINE notif_list STRING,
            notif_array util.JSONArray,
            notif_item util.JSONObject,
@@ -215,7 +204,7 @@ FUNCTION handle_notification(sender_id)
            i, x INTEGER
     CALL ui.Interface.frontCall(
               "mobile", "getRemoteNotifications",
-              [ sender_id ], [ notif_list ] )
+              [ ], [ notif_list ] )
     TRY
         LET notif_array = util.JSONArray.parse(notif_list)
         IF notif_array.getLength() > 0 THEN

@@ -60,10 +60,10 @@
   </Settings>
   <LanguageList version="1.0"/>
   <PlatformList version="1.0"/>
-  <Group label="gcm_push_server" language="Genero">
-    <Application binaryName="gcm_push_server" id="-844176464" label="gcm_push_server">
-      <File filePath="server/gcm_push_server.4gl"/>
-      <File filePath="server/gcm_push_server.per"/>
+  <Group label="fcm_push_server" language="Genero">
+    <Application binaryName="fcm_push_server" id="-844176464" label="fcm_push_server">
+      <File filePath="server/fcm_push_server.4gl"/>
+      <File filePath="server/fcm_push_server.per"/>
     </Application>
   </Group>
 </Project>

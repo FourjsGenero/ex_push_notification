@@ -1,6 +1,6 @@
-if test -z "$ANDROID_HOME"
+if test -z "$ANDROID_SDK_ROOT"
 then
-    echo "Must set ANDROID_HOME env var"
+    echo "Must set ANDROID_SDK_ROOT env var"
     exit 1
 fi
 if test -z "$JAVA_HOME"
@@ -20,7 +20,7 @@ outdir=$builddir/gma
 mkdir -p $outdir
 
 gmabuildtool build \
-    --android-sdk $ANDROID_HOME \
+    --android-sdk $ANDROID_SDK_ROOT \
     --clean \
     --build-force-scaffold-update --build-quietly \
     --build-output-apk-name pushdemo \

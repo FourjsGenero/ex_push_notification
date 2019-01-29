@@ -23,7 +23,6 @@ FUNCTION open_create_db()
     IF SQLCA.SQLCODE<0 THEN
        CREATE TABLE tokens (
               id INTEGER NOT NULL PRIMARY KEY,
-              sender_id VARCHAR(150),
               registration_token VARCHAR(250) NOT NULL UNIQUE,
               badge_number INTEGER NOT NULL,
               app_user VARCHAR(50) NOT NULL, -- UNIQUE
@@ -107,7 +106,6 @@ END FUNCTION
 FUNCTION process_command(url, data)
     DEFINE url, data STRING
     DEFINE data_rec RECORD
-               sender_id VARCHAR(150),
                registration_token VARCHAR(250),
                badge_number INTEGER,
                app_user VARCHAR(50)
@@ -134,12 +132,9 @@ FUNCTION process_command(url, data)
            SELECT MAX(id) + 1 INTO p_id FROM tokens
            IF p_id IS NULL THEN LET p_id=1 END IF
            LET p_ts = util.Datetime.toUTC(CURRENT YEAR TO FRACTION(3))
-           IF LENGTH(data_rec.sender_id) == 0 THEN
-              LET data_rec.sender_id = NULL
-           END IF
            WHENEVER ERROR CONTINUE
            INSERT INTO tokens
-               VALUES( p_id, data_rec.sender_id, data_rec.registration_token, 0, data_rec.app_user, p_ts )
+               VALUES( p_id, data_rec.registration_token, 0, data_rec.app_user, p_ts )
            WHENEVER ERROR STOP
            IF SQLCA.SQLCODE==0 THEN
               LET result_rec.message = SFMT("Token is now registered:\n [%1]", data_rec.registration_token)
@@ -227,7 +222,6 @@ END FUNCTION
 FUNCTION show_tokens()
     DEFINE rec RECORD -- Use CHAR to format
                id INTEGER,
-               sender_id CHAR(150),
                registration_token CHAR(250),
                badge_number INTEGER,
                app_user CHAR(50),
@@ -235,12 +229,8 @@ FUNCTION show_tokens()
            END RECORD
     DECLARE c1 CURSOR FOR SELECT * FROM tokens ORDER BY id
     FOREACH c1 INTO rec.*
-        IF rec.sender_id IS NULL THEN
-           LET rec.sender_id = "(null)"
-        END IF
         DISPLAY "   ", rec.id, ": ",
                        rec.app_user[1,10], " / ",
-                       rec.sender_id[1,20],"... / ",
                        "(",rec.badge_number USING "<<<<&", ") ",
                        rec.registration_token[1,20],"..."
     END FOREACH
