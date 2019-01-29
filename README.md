@@ -13,8 +13,7 @@ The demo uses by default an SQLite database named "tokendb".
 
 If this DB file does not exist, token_maintainer.4gl will create it.
 
-You can switch between FCM and APNs technos with the same token database:
-The programs check for the sender_id, which is specific to FCM.
+You can switch between FCM and APNs technos with the same token database.
 
 The token_maintainer.4gl program is a Web Service program and should normally be running behing a GAS.
 For development/test purpose, it can be run standalone.

@@ -105,16 +105,13 @@ FUNCTION apns_collect_tokens(reg_ids)
                    END RECORD
     DEFINE rec RECORD
                id INTEGER,
-               sender_id VARCHAR(150),
                registration_token VARCHAR(250),
                badge_number INTEGER,
                app_user VARCHAR(50),
                reg_date DATETIME YEAR TO FRACTION(3)
            END RECORD,
            x INTEGER
-    DECLARE c1 CURSOR FOR
-      SELECT * FROM tokens
-       WHERE sender_id IS NULL -- In case if GCM tokens remain in the db
+    DECLARE c1 CURSOR FOR SELECT * FROM tokens
     CALL reg_ids.clear()
     FOREACH c1 INTO rec.*
         LET x = reg_ids.getLength() + 1
