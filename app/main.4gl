@@ -13,6 +13,7 @@ DEFINE notifs DYNAMIC ARRAY OF RECORD
 DEFINE rec RECORD
            tm_host STRING,
            tm_port INTEGER,
+           notification_type STRING,
            user_name STRING,
            registration_token STRING
        END RECORD
@@ -25,9 +26,16 @@ MAIN
     OPEN FORM f1 FROM "pushclient"
     DISPLAY FORM f1
 
+    IF ui.Interface.getFrontEndName()=="GMA" THEN
+        LET rec.notification_type = "FCM"
+    ELSE
+        LET rec.notification_type = "APNS"
+    END IF
+
     DIALOG ATTRIBUTES(UNBUFFERED)
       INPUT BY NAME rec.tm_host,
                     rec.tm_port,
+                    rec.notification_type,
                     rec.user_name,
                     rec.registration_token
             ATTRIBUTES(WITHOUT DEFAULTS)
@@ -35,10 +43,10 @@ MAIN
       DISPLAY ARRAY notifs TO sr.*
       END DISPLAY
       ON ACTION register
-         LET rec.registration_token = register(rec.user_name)
+         LET rec.registration_token = register(rec.notification_type, rec.user_name)
          CALL save_settings()
       ON ACTION unregister
-         CALL unregister(rec.registration_token, rec.user_name)
+         CALL unregister(rec.notification_type, rec.registration_token, rec.user_name)
          LET rec.registration_token = NULL
          CALL save_settings()
       ON ACTION notificationpushed
@@ -88,14 +96,16 @@ FUNCTION save_settings()
     CALL ch.close()
 END FUNCTION
 
-FUNCTION register(app_user)
-    DEFINE app_user STRING
+FUNCTION register(notification_type, app_user)
+    DEFINE notification_type STRING,
+           app_user STRING
     DEFINE registration_token STRING
     TRY
         CALL ui.Interface.frontCall(
                 "mobile", "registerForRemoteNotifications", 
                 [ ], [ registration_token ] )
-        IF tm_command( "register", registration_token, app_user, 0 ) < 0 THEN
+        IF tm_command( "register", notification_type,
+                       registration_token, app_user, 0 ) < 0 THEN
            RETURN NULL
         END IF
     CATCH
@@ -106,10 +116,12 @@ FUNCTION register(app_user)
     RETURN registration_token
 END FUNCTION
 
-FUNCTION unregister(registration_token, app_user)
-    DEFINE registration_token STRING,
+FUNCTION unregister(notification_type, registration_token, app_user)
+    DEFINE notification_type STRING,
+           registration_token STRING,
            app_user STRING
-    IF tm_command( "unregister", registration_token, app_user, 0 ) < 0 THEN
+    IF tm_command( "unregister", notification_type,
+                   registration_token, app_user, 0 ) < 0 THEN
        RETURN
     END IF
     TRY
@@ -123,8 +135,10 @@ FUNCTION unregister(registration_token, app_user)
     MESSAGE "Un-registration succeeded"
 END FUNCTION
 
-FUNCTION tm_command( command, registration_token, app_user, badge_number )
+FUNCTION tm_command( command, notification_type, registration_token,
+                     app_user, badge_number )
     DEFINE command STRING,
+           notification_type STRING,
            registration_token STRING,
            app_user STRING,
            badge_number INTEGER
@@ -146,6 +160,7 @@ FUNCTION tm_command( command, registration_token, app_user, badge_number )
         CALL req.setConnectionTimeOut(5)
         CALL req.setTimeOut(5)
         LET json_obj = util.JSONObject.create()
+        CALL json_obj.put("notification_type", notification_type)
         CALL json_obj.put("registration_token", registration_token)
         CALL json_obj.put("app_user", app_user)
         CALL json_obj.put("badge_number", badge_number)
@@ -184,7 +199,7 @@ FUNCTION setup_badge_number(consumed)
        LET badge_number = badge_number - consumed
     END IF
     CALL ui.Interface.frontCall("ios", "setBadgeNumber", [badge_number], [])
-    IF tm_command( "badge_number", rec.registration_token,
+    IF tm_command( "badge_number", "APNS", rec.registration_token,
                    rec.user_name, badge_number) < 0 THEN
        ERROR "Could not send new badge number to token maintainer."
        RETURN
@@ -229,7 +244,8 @@ FUNCTION handle_notification()
                   LET notif_data = util.JSONObject.parse(gcm_data_s)
                   IF notif_data IS NOT NULL THEN
                      LET gcm_genero_notification_s = notif_data.get("genero_notification")
-                     LET gcm_genero_notification = util.JSONObject.parse( gcm_genero_notification_s )
+                     LET gcm_genero_notification = util.JSONObject.parse(
+                                                        gcm_genero_notification_s )
                      IF gcm_genero_notification IS NOT NULL THEN
                         LET info = gcm_genero_notification.get("content")
                      END IF

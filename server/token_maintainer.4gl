@@ -23,6 +23,7 @@ FUNCTION open_create_db()
     IF SQLCA.SQLCODE<0 THEN
        CREATE TABLE tokens (
               id INTEGER NOT NULL PRIMARY KEY,
+              notification_type VARCHAR(10) NOT NULL,
               registration_token VARCHAR(250) NOT NULL UNIQUE,
               badge_number INTEGER NOT NULL,
               app_user VARCHAR(50) NOT NULL, -- UNIQUE
@@ -106,6 +107,7 @@ END FUNCTION
 FUNCTION process_command(url, data)
     DEFINE url, data STRING
     DEFINE data_rec RECORD
+               notification_type VARCHAR(10),
                registration_token VARCHAR(250),
                badge_number INTEGER,
                app_user VARCHAR(50)
@@ -126,7 +128,8 @@ FUNCTION process_command(url, data)
                   WHERE registration_token = data_rec.registration_token
            IF p_id > 0 THEN
               LET result_rec.status = 1
-              LET result_rec.message = SFMT("Token already registered:\n [%1]", data_rec.registration_token)
+              LET result_rec.message = SFMT("Token already registered:\n [%1]",
+                                            data_rec.registration_token)
               GOTO pc_end
            END IF
            SELECT MAX(id) + 1 INTO p_id FROM tokens
@@ -134,23 +137,28 @@ FUNCTION process_command(url, data)
            LET p_ts = util.Datetime.toUTC(CURRENT YEAR TO FRACTION(3))
            WHENEVER ERROR CONTINUE
            INSERT INTO tokens
-               VALUES( p_id, data_rec.registration_token, 0, data_rec.app_user, p_ts )
+               VALUES( p_id, data_rec.notification_type,
+                       data_rec.registration_token, 0, data_rec.app_user, p_ts )
            WHENEVER ERROR STOP
            IF SQLCA.SQLCODE==0 THEN
-              LET result_rec.message = SFMT("Token is now registered:\n [%1]", data_rec.registration_token)
+              LET result_rec.message = SFMT("Token is now registered:\n [%1]",
+                                            data_rec.registration_token)
            ELSE
               LET result_rec.status = -2
-              LET result_rec.message = SFMT("Could not insert token in database:\n [%1]", data_rec.registration_token)
+              LET result_rec.message = SFMT("Could not insert token in database:\n [%1]",
+                                            data_rec.registration_token)
            END IF
          WHEN url MATCHES "*token_maintainer/unregister"
            CALL util.JSON.parse( data, data_rec )
            DELETE FROM tokens
                   WHERE registration_token = data_rec.registration_token
            IF SQLCA.SQLERRD[3]==1 THEN
-              LET result_rec.message = SFMT("Token unregistered:\n [%1]", data_rec.registration_token)
+              LET result_rec.message = SFMT("Token unregistered:\n [%1]",
+                                            data_rec.registration_token)
            ELSE
               LET result_rec.status = -3
-              LET result_rec.message = SFMT("Could not find token in database:\n [%1]", data_rec.registration_token)
+              LET result_rec.message = SFMT("Could not find token in database:\n [%1]",
+                                            data_rec.registration_token)
            END IF
          WHEN url MATCHES "*token_maintainer/badge_number"
             CALL util.JSON.parse( data, data_rec )
@@ -160,15 +168,19 @@ FUNCTION process_command(url, data)
                WHERE registration_token = data_rec.registration_token
             WHENEVER ERROR STOP
             IF SQLCA.SQLCODE==0 THEN
-               LET result_rec.message = SFMT("Badge number update succeeded for Token:\n [%1]\n New value for badge number :[%2]\n", data_rec.registration_token, data_rec.badge_number)
+               LET result_rec.message =
+                   SFMT("Badge number updated for Token:\n [%1]\n New value:[%2]\n",
+                        data_rec.registration_token, data_rec.badge_number)
             ELSE
                LET result_rec.status = -4
-               LET result_rec.message = SFMT("Could not update badge number for token in database:\n [%1]", data_rec.registration_token)
+               LET result_rec.message = SFMT("Badge update failed for token:\n [%1]",
+                                             data_rec.registration_token)
             END IF
        END CASE
     CATCH
        LET result_rec.status = -1
-       LET result_rec.message = SFMT("Failed to register token:\n [%1]", data_rec.registration_token)
+       LET result_rec.message = SFMT("Failed to register token:\n [%1]",
+                                     data_rec.registration_token)
     END TRY
 LABEL pc_end:
     DISPLAY result_rec.message
@@ -222,6 +234,7 @@ END FUNCTION
 FUNCTION show_tokens()
     DEFINE rec RECORD -- Use CHAR to format
                id INTEGER,
+               notification_type CHAR(10),
                registration_token CHAR(250),
                badge_number INTEGER,
                app_user CHAR(50),
@@ -230,6 +243,7 @@ FUNCTION show_tokens()
     DECLARE c1 CURSOR FOR SELECT * FROM tokens ORDER BY id
     FOREACH c1 INTO rec.*
         DISPLAY "   ", rec.id, ": ",
+                       rec.notification_type,": ",
                        rec.app_user[1,10], " / ",
                        "(",rec.badge_number USING "<<<<&", ") ",
                        rec.registration_token[1,20],"..."

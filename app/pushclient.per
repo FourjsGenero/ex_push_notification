@@ -8,6 +8,7 @@ Token maintainer:
 Host: [tmh                      ]
 Port: [tmp                      ]
 Notifications:
+Notification service: [nts      ]
 User Name: [unm                 ]
 [b1            |b2              ]
 Token:
@@ -27,6 +28,7 @@ END
 ATTRIBUTES
 EDIT tmh = FORMONLY.tm_host, SCROLL;
 EDIT tmp = FORMONLY.tm_port;
+EDIT nts = FORMONLY.notification_type, NOENTRY;
 EDIT unm = FORMONLY.user_name;
 BUTTON b1: register, TEXT="Register";
 BUTTON b2: unregister, TEXT="Unregister";

@@ -23,9 +23,11 @@ MAIN
     END IF
     LET rec.msg_title = "Hello world!"
     LET rec.user_data = "User data..."
-    INPUT BY NAME rec.* WITHOUT DEFAULTS ATTRIBUTES(UNBUFFERED, ACCEPT=FALSE, CANCEL=FALSE)
+    INPUT BY NAME rec.* WITHOUT DEFAULTS
+             ATTRIBUTES(UNBUFFERED, ACCEPT=FALSE, CANCEL=FALSE)
         ON ACTION send_notification
-           LET rec.info = fcm_send_text(rec.server_key, rec.msg_title, rec.user_data)
+           LET rec.info = fcm_send_text(rec.server_key,
+                                        rec.msg_title, rec.user_data)
         ON ACTION quit
            EXIT INPUT
     END INPUT
@@ -88,12 +90,15 @@ FUNCTION fcm_collect_tokens(reg_ids)
     DEFINE reg_ids DYNAMIC ARRAY OF STRING
     DEFINE rec RECORD
                id INTEGER,
+               notification_type VARCHAR(10),
                registration_token VARCHAR(250),
                badge_number INTEGER,
                app_user VARCHAR(50),
                reg_date DATETIME YEAR TO FRACTION(3)
            END RECORD
-    DECLARE c1 CURSOR FOR SELECT * FROM tokens
+    DECLARE c1 CURSOR FOR
+      SELECT * FROM tokens
+       WHERE notification_type = "FCM"
     CALL reg_ids.clear()
     FOREACH c1 INTO rec.*
         CALL reg_ids.appendElement()

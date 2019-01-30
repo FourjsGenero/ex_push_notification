@@ -13,7 +13,8 @@ MAIN
     DISPLAY FORM f1
     LET rec.msg_title = "Hello, world!"
     LET rec.user_data = "User data..."
-    INPUT BY NAME rec.* WITHOUT DEFAULTS ATTRIBUTES(UNBUFFERED, ACCEPT=FALSE, CANCEL=FALSE)
+    INPUT BY NAME rec.* WITHOUT DEFAULTS
+             ATTRIBUTES(UNBUFFERED, ACCEPT=FALSE, CANCEL=FALSE)
         ON ACTION send_notification
            LET rec.info = apns_send_message(rec.msg_title, rec.user_data)
         ON ACTION quit
@@ -105,13 +106,16 @@ FUNCTION apns_collect_tokens(reg_ids)
                    END RECORD
     DEFINE rec RECORD
                id INTEGER,
+               notification_type VARCHAR(10),
                registration_token VARCHAR(250),
                badge_number INTEGER,
                app_user VARCHAR(50),
                reg_date DATETIME YEAR TO FRACTION(3)
            END RECORD,
            x INTEGER
-    DECLARE c1 CURSOR FOR SELECT * FROM tokens
+    DECLARE c1 CURSOR FOR
+      SELECT * FROM tokens
+       WHERE notification_type = "APNS"
     CALL reg_ids.clear()
     FOREACH c1 INTO rec.*
         LET x = reg_ids.getLength() + 1

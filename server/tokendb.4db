@@ -13,10 +13,11 @@
   <ExtractionSettings/>
   <Table active="true" name="tokens" status="U" uuid="db/table2">
     <Column fglLength="4" fglType="2" name="id" notNull="true" order="1" status="U" uuid="db/column2"/>
-    <Column fglLength="250" fglType="201" name="registration_token" notNull="true" order="2" status="U" uuid="db/column4"/>
-    <Column fglLength="4" fglType="2" name="badge_number" notNull="true" order="3" status="U" uuid="db/column6"/>
-    <Column fglLength="50" fglType="201" name="app_user" notNull="true" order="4" status="U" uuid="db/column8"/>
-    <Column fglLength="4365" fglType="10" name="reg_date" notNull="true" order="5" status="U" uuid="db/column10"/>
+    <Column fglLength="10" fglType="201" name="notification_type" notNull="true" order="2" status="U" uuid="db/column4"/>
+    <Column fglLength="250" fglType="201" name="registration_token" notNull="true" order="3" status="U" uuid="db/column6"/>
+    <Column fglLength="4" fglType="2" name="badge_number" notNull="true" order="4" status="U" uuid="db/column8"/>
+    <Column fglLength="50" fglType="201" name="app_user" notNull="true" order="5" status="U" uuid="db/column10"/>
+    <Column fglLength="4365" fglType="10" name="reg_date" notNull="true" order="6" status="U" uuid="db/column12"/>
   </Table>
   <Views ActiveView="View-1" showLabels="true">
     <View Name="View-1">
