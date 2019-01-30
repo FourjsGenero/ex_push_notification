@@ -6,6 +6,8 @@ FORMS=\
 MAIN=\
   main.42m
 
+FCM_CONFIG_FILE=resources/android/google-services.json
+
 all:: $(FORMS) $(MAIN)
 
 BUILDDIR=/tmp/build_pushdemo
@@ -18,11 +20,13 @@ $(APPDIR): $(BUILDDIR)
 
 appdir:: all $(APPDIR)
 	rm -rf $(APPDIR)/*
-	$(CP) resources/android/google-services.json $(APPDIR)
 	$(CP) $(FORMS) $(APPDIR)
 	$(CP) $(MAIN) $(APPDIR)
 
-package_gma:: appdir
+appdir-gma:: $(FCM_CONFIG_FILE)
+	$(CP) $(FCM_CONFIG_FILE) $(APPDIR)
+
+package_gma:: appdir appdir-gma
 	sh build_gma.sh
 
 package_gmi:: appdir
