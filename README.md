@@ -11,6 +11,8 @@ Push notifications requires a physical device (You can't use a simulator).
 
 The demo uses by default an SQLite database named "tokendb".
 
+The locale settings for server programs must be UTF-8 and FGL_LENGTH_SEMANTICS=CHAR.
+
 If this DB file does not exist, token_maintainer.4gl will create it.
 
 You can switch between FCM and APNs technos with the same token database.
