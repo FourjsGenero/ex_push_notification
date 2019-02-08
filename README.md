@@ -134,7 +134,7 @@ Define the following environment variables:
 * GMIDEVICE: The iOS device ID.
 * GMICERTIFICATE: The certificate.
 * GMIPROVISIONING: The provisioning profile for your app.
-
+* GMIAPPID: The bundle id of your app (like com.fourjs.pushdemo).
 
 ```
 $ make clean all

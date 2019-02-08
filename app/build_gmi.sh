@@ -13,6 +13,11 @@ then
     echo "Must set GMIPROVISIONING env var to define the provisioning profile"
     exit 1
 fi
+if test -z "$GMIAPPID"
+then
+    echo "Must set GMIAPPID env var to define the bundle id of the app"
+    exit 1
+fi
 
 builddir=/tmp/build_pushdemo
 appdir=$builddir/appdir
@@ -27,7 +32,7 @@ gmibuildtool \
    --program-files $appdir \
    --icons resources/ios/icons \
    --storyboard resources/ios/LaunchScreen.storyboard \
-   --bundle-id "com.fourjs.pushdemo" \
+   --bundle-id "$GMIAPPID" \
    --device "$GMIDEVICE" \
    --certificate "$GMICERTIFICATE" \
    --provisioning "$GMIPROVISIONING"
