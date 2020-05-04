@@ -25,12 +25,12 @@ The token maintainer must be started first, to collect device registration reque
 
 ## Prerequisites
 
-* Genero BDL 3.10.18+
-* Genero Mobile for Android 1.30.18+
-* Genero Mobile for iOS 1.30.14+
-* Genero Browser Client 1.00.52+
-* Genero Desktop Client 3.10+
-* Genero Studio 3.10+
+* Genero BDL 3.20.09+
+* Genero Mobile for Android 1.40.09+
+* Genero Mobile for iOS 1.40.07+
+* Genero Browser Client 1.00.56+
+* Genero Desktop Client 3.20.12+
+* Genero Studio 3.20.08+
 * GNU Make
 
 ## Using Firebase Could Messaging
