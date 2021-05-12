@@ -4,39 +4,40 @@ END
 LAYOUT (TEXT="Push client")
 GRID
 {
-Token maintainer:
-Host: [tmh                      ]
-Port: [tmp                      ]
-Notifications:
-Notification service: [nts      ]
-User Name: [unm                 ]
-[b1            |b2              ]
-Token:
-[rt                             ]
-[                               ]
-[                               ]
-[b3                             ]
-<TABLE t1                       >
-[c1          |c2                ]
-[c1          |c2                ]
-[c1          |c2                ]
-[c1          |c2                ]
-<                               >
+[l1                     ]
+[l2   |tmh      |l3|tmp ]
+[l4     |nts            ]
+[l5     |unm            ]
+[b1         |b2         ]
+[l6                     ]
+[rt                     ]
+[                       ]
+[                       ]
+[l7                     ]
+[pm                     ]
+[l8                     ]
+[ud                     ]
+[                       ]
+[                       ]
 }
 END
 END
 ATTRIBUTES
+LABEL l1: label1, TEXT="Token maintainer";
+LABEL l2: label2, TEXT="Host:";
+LABEL l3: label3, TEXT="Port:";
+LABEL l4: label4, TEXT="Solution:";
+LABEL l5: label5, TEXT="User:";
+LABEL l6: label6, TEXT="Token:";
+LABEL l7: label7, TEXT="Message:";
+LABEL l8: label8, TEXT="User data:";
 EDIT tmh = FORMONLY.tm_host, SCROLL;
 EDIT tmp = FORMONLY.tm_port;
 EDIT nts = FORMONLY.notification_type, NOENTRY;
 EDIT unm = FORMONLY.user_name;
 BUTTON b1: register, TEXT="Register";
 BUTTON b2: unregister, TEXT="Unregister";
-BUTTON b3: clean, TEXT="Clear log";
 TEXTEDIT rt = FORMONLY.registration_token, NOENTRY;
-EDIT c1 = FORMONLY.info, SCROLL;
-EDIT c2 = FORMONLY.ts, SCROLL;
-END
-INSTRUCTIONS
-SCREEN RECORD sr(FORMONLY.info,FORMONLY.ts);
+EDIT pm = FORMONLY.push_message, SCROLL, NOENTRY;
+TEXTEDIT ud = FORMONLY.user_data, NOENTRY;
 END

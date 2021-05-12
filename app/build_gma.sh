@@ -19,7 +19,12 @@ outdir=$builddir/gma
 
 mkdir -p $outdir
 
-gmabuildtool build \
+if test -n "$FGLGBCDIR"
+then
+    bgr_option="-bgr $FGLGBCDIR"
+fi
+
+gmabuildtool build ${bgr_option} \
     --android-sdk $ANDROID_SDK_ROOT \
     --clean \
     --build-force-scaffold-update --build-quietly \

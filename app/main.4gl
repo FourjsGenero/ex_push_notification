@@ -5,21 +5,17 @@ IMPORT os
 CONSTANT REG_SERVER = "toro"  -- Change to your hostname
 CONSTANT REG_PORT = 9999
 
-DEFINE notifs DYNAMIC ARRAY OF RECORD
-           info STRING,
-           ts DATETIME YEAR TO FRACTION(3)
-       END RECORD
-
 DEFINE rec RECORD
            tm_host STRING,
            tm_port INTEGER,
            notification_type STRING,
            user_name STRING,
-           registration_token STRING
+           registration_token STRING,
+           push_message STRING,
+           user_data STRING
        END RECORD
 
 MAIN
-    DEFINE x INTEGER
 
     CALL load_settings()
 
@@ -32,16 +28,8 @@ MAIN
         LET rec.notification_type = "APNS"
     END IF
 
-    DIALOG ATTRIBUTES(UNBUFFERED)
-      INPUT BY NAME rec.tm_host,
-                    rec.tm_port,
-                    rec.notification_type,
-                    rec.user_name,
-                    rec.registration_token
-            ATTRIBUTES(WITHOUT DEFAULTS)
-      END INPUT
-      DISPLAY ARRAY notifs TO sr.*
-      END DISPLAY
+    INPUT BY NAME rec.*
+         ATTRIBUTES(WITHOUT DEFAULTS, UNBUFFERED, CANCEL=FALSE, ACCEPT=FALSE)
       ON ACTION register
          LET rec.registration_token = register(rec.notification_type, rec.user_name)
          CALL save_settings()
@@ -50,14 +38,11 @@ MAIN
          LET rec.registration_token = NULL
          CALL save_settings()
       ON ACTION notificationpushed
-         LET x=handle_notification()
-         CALL DIALOG.setCurrentRow("sr",x)
-      ON ACTION clean
-         CALL DIALOG.deleteAllRows("sr")
-      ON ACTION quit
+         CALL handle_notification()
+      ON ACTION quit ATTRIBUTES(TEXT="Quit")
          CALL save_settings()
-         EXIT DIALOG
-    END DIALOG
+         EXIT INPUT
+    END INPUT
 
 END MAIN
 
@@ -109,10 +94,10 @@ FUNCTION register(notification_type, app_user)
            RETURN NULL
         END IF
     CATCH
-        MESSAGE "Registration failed."
+        MESSAGE "Registration failed!."
         RETURN NULL
     END TRY
-    MESSAGE SFMT("Registration succeeded (token=%1)", registration_token)
+    MESSAGE "Registration succeeded!"
     RETURN registration_token
 END FUNCTION
 
@@ -215,27 +200,29 @@ FUNCTION handle_notification()
            gcm_data_s STRING,
            gcm_genero_notification_s STRING,
            gcm_genero_notification util.JSONObject,
-           info, other_info STRING,
-           i, x INTEGER
+           i INTEGER
     CALL ui.Interface.frontCall(
               "mobile", "getRemoteNotifications",
               [ ], [ notif_list ] )
     TRY
+        IF notif_list.trimLeft() NOT LIKE "[%" THEN
+           LET notif_list = "[ ", notif_list, " ]"
+        END IF
         LET notif_array = util.JSONArray.parse(notif_list)
         IF notif_array.getLength() > 0 THEN
            CALL setup_badge_number(notif_array.getLength())
         END IF
         FOR i=1 TO notif_array.getLength()
-            LET info = NULL
-            LET other_info = NULL
+            LET rec.push_message = NULL
+            LET rec.user_data = NULL
             LET notif_item = notif_array.get(i)
             -- Try APNs msg format
             LET aps_record = notif_item.get("aps")
             IF aps_record IS NOT NULL THEN
-               LET info = aps_record.get("alert")
+               LET rec.push_message = aps_record.get("alert")
                LET notif_data = notif_item.get("custom_data")
                IF notif_data IS NOT NULL THEN
-                  LET other_info = notif_data.get("other_info")
+                  LET rec.user_data = notif_data.get("other_info")
                END IF
             ELSE
                -- Try GCM msg format
@@ -247,23 +234,17 @@ FUNCTION handle_notification()
                      LET gcm_genero_notification = util.JSONObject.parse(
                                                         gcm_genero_notification_s )
                      IF gcm_genero_notification IS NOT NULL THEN
-                        LET info = gcm_genero_notification.get("content")
+                        LET rec.push_message = gcm_genero_notification.get("content")
                      END IF
-                     LET other_info = notif_data.get("other_info")
+                     LET rec.user_data = notif_data.get("other_info")
                   END IF
                END IF
             END IF
-            IF info IS NULL THEN
-               LET info = "Unexpected message format"
+            IF rec.push_message IS NULL THEN
+               LET rec.push_message = "Unexpected message format"
             END IF
-            MESSAGE SFMT("Notification message:\n%1\n%2", info, other_info)
-            CALL notifs.appendElement()
-            LET x = notifs.getLength()
-            LET notifs[x].info = SFMT("%1 (%2)", info, other_info)
-            LET notifs[x].ts = CURRENT
         END FOR
     CATCH
         MESSAGE "Could not extract notification info"
     END TRY
-    RETURN IIF(x==0,1,x)
 END FUNCTION
