@@ -20,7 +20,7 @@ FUNCTION open_create_db()
     WHENEVER ERROR CONTINUE
     SELECT COUNT(*) INTO x FROM tokens
     WHENEVER ERROR STOP
-    IF SQLCA.SQLCODE<0 THEN
+    IF sqlca.sqlcode<0 THEN
        CREATE TABLE tokens (
               id INTEGER NOT NULL PRIMARY KEY,
               notification_type VARCHAR(10) NOT NULL,
@@ -40,10 +40,10 @@ FUNCTION create_empty_file(fn)
 END FUNCTION
 
 FUNCTION handle_registrations()
-    DEFINE req com.HTTPServiceRequest,
+    DEFINE req com.HttpServiceRequest,
            url, method, version, content_type STRING,
            reg_data, reg_result STRING
-    IF LENGTH(fgl_getenv("FGLAPPSERVER"))==0 THEN
+    IF length(fgl_getenv("FGLAPPSERVER"))==0 THEN
        -- Normally, FGLAPPSERVER is set by the GAS
        DISPLAY SFMT("Setting FGLAPPSERVER to %1", DEFAULT_PORT)
        CALL fgl_setenv("FGLAPPSERVER", DEFAULT_PORT)
@@ -51,14 +51,14 @@ FUNCTION handle_registrations()
     CALL com.WebServiceEngine.Start()
     WHILE TRUE
        TRY
-          LET req = com.WebServiceEngine.getHTTPServiceRequest(20)
+          LET req = com.WebServiceEngine.GetHTTPServiceRequest(20)
        CATCH
-          IF STATUS==-15565 THEN
+          IF status==-15565 THEN
              DISPLAY "TCP socket probably closed by GAS, stopping process..."
              EXIT PROGRAM 0
           ELSE
-             DISPLAY "Unexpected getHTTPServiceRequest() exception: ", STATUS
-             DISPLAY "Reason: ", SQLCA.SQLERRM
+             DISPLAY "Unexpected getHttpServiceRequest() exception: ", status
+             DISPLAY "Reason: ", sqlca.sqlerrm
              EXIT PROGRAM 1
           END IF
        END TRY
@@ -68,7 +68,7 @@ FUNCTION handle_registrations()
           CALL show_tokens()
           CONTINUE WHILE
        END IF
-       LET url = req.getURL()
+       LET url = req.getUrl()
        LET method = req.getMethod()
        IF method IS NULL OR method != "POST" THEN
           IF method == "GET" THEN
@@ -95,7 +95,7 @@ FUNCTION handle_registrations()
        TRY
           CALL req.readTextRequest() RETURNING reg_data
        CATCH
-          DISPLAY SFMT("Unexpected HTTP request read exception: %1", STATUS)
+          DISPLAY SFMT("Unexpected HTTP request read exception: %1", status)
        END TRY
        LET reg_result = process_command(url, reg_data)
        CALL req.setResponseCharset("UTF-8")
@@ -140,7 +140,7 @@ FUNCTION process_command(url, data)
                VALUES( p_id, data_rec.notification_type,
                        data_rec.registration_token, 0, data_rec.app_user, p_ts )
            WHENEVER ERROR STOP
-           IF SQLCA.SQLCODE==0 THEN
+           IF sqlca.sqlcode==0 THEN
               LET result_rec.message = SFMT("Token is now registered:\n [%1]",
                                             data_rec.registration_token)
            ELSE
@@ -152,7 +152,7 @@ FUNCTION process_command(url, data)
            CALL util.JSON.parse( data, data_rec )
            DELETE FROM tokens
                   WHERE registration_token = data_rec.registration_token
-           IF SQLCA.SQLERRD[3]==1 THEN
+           IF sqlca.sqlerrd[3]==1 THEN
               LET result_rec.message = SFMT("Token unregistered:\n [%1]",
                                             data_rec.registration_token)
            ELSE
@@ -167,7 +167,7 @@ FUNCTION process_command(url, data)
                  SET badge_number = data_rec.badge_number 
                WHERE registration_token = data_rec.registration_token
             WHENEVER ERROR STOP
-            IF SQLCA.SQLCODE==0 THEN
+            IF sqlca.sqlcode==0 THEN
                LET result_rec.message =
                    SFMT("Badge number updated for Token:\n [%1]\n New value:[%2]\n",
                         data_rec.registration_token, data_rec.badge_number)
@@ -189,8 +189,8 @@ LABEL pc_end:
 END FUNCTION
 
 FUNCTION check_apns_feedback()
-    DEFINE req com.TCPRequest,
-           resp com.TCPResponse,
+    DEFINE req com.TcpRequest,
+           resp com.TcpResponse,
            feedback DYNAMIC ARRAY OF RECORD
                         timestamp INTEGER,
                         deviceToken STRING
@@ -206,9 +206,9 @@ FUNCTION check_apns_feedback()
     LOCATE data IN MEMORY
 
     TRY
-        LET req = com.TCPRequest.create( "tcps://feedback.push.apple.com:2196" )
+        LET req = com.TcpRequest.Create( "tcps://feedback.push.apple.com:2196" )
         CALL req.setKeepConnection(true)
-        CALL req.setTimeout(2)
+        CALL req.setTimeOut(2)
         CALL req.doRequest()
         LET resp = req.getResponse()
         CALL resp.getDataResponse(data)
@@ -222,11 +222,11 @@ FUNCTION check_apns_feedback()
                     AND reg_date < timestamp
         END FOR
     CATCH
-        CASE STATUS
+        CASE status
             WHEN -15553 DISPLAY "APNS feedback: Timeout: No feedback message"
-            WHEN -15566 DISPLAY "APNS feedback: Operation failed :", SQLCA.SQLERRM
+            WHEN -15566 DISPLAY "APNS feedback: Operation failed :", sqlca.sqlerrm
             WHEN -15564 DISPLAY "APNS feedback: Server has shutdown"
-            OTHERWISE   DISPLAY "APNS feedback: ERROR :",STATUS
+            OTHERWISE   DISPLAY "APNS feedback: ERROR :",status
         END CASE
     END TRY
 END FUNCTION

@@ -25,8 +25,8 @@ END MAIN
 FUNCTION apns_send_notif_http(deviceTokenHexa, notif_obj)
     DEFINE deviceTokenHexa STRING,
            notif_obj util.JSONObject
-    DEFINE req com.TCPRequest,
-           resp com.TCPResponse,
+    DEFINE req com.TcpRequest,
+           resp com.TcpResponse,
            uuid STRING,
            ecode INTEGER,
            dt DATETIME YEAR TO SECOND,
@@ -41,11 +41,11 @@ FUNCTION apns_send_notif_http(deviceTokenHexa, notif_obj)
     LET exp = util.Datetime.toSecondsSinceEpoch(dt)
 
     TRY  
-        --LET req = com.TCPRequest.create( "tcps://gateway.push.apple.com:2195" )
-        LET req = com.TCPRequest.create( "tcps://gateway.sandbox.push.apple.com:2195" )
+        --LET req = com.TcpRequest.Create( "tcps://gateway.push.apple.com:2195" )
+        LET req = com.TcpRequest.Create( "tcps://gateway.sandbox.push.apple.com:2195" )
         CALL req.setKeepConnection(true)
-        CALL req.setTimeout(2) # Wait 2 seconds for APNs to return error code
-        LET uuid = security.RandomGenerator.createRandomString(4)
+        CALL req.setTimeOut(2) # Wait 2 seconds for APNs to return error code
+        LET uuid = security.RandomGenerator.CreateRandomString(4)
         DISPLAY "PUSH MESSAGE: ", deviceTokenHexa, "/", notif_obj.toString()
         CALL com.APNS.EncodeMessage(
                   data,
@@ -55,7 +55,7 @@ FUNCTION apns_send_notif_http(deviceTokenHexa, notif_obj)
                   exp,
                   10
              )
-        IF LENGTH(data) > 2000 THEN
+        IF length(data) > 2000 THEN
            LET res = "ERROR : APNS payload cannot exceed 2 kilobytes"
            RETURN res
         END IF
@@ -66,15 +66,15 @@ FUNCTION apns_send_notif_http(deviceTokenHexa, notif_obj)
             CALL com.APNS.DecodeError(err) RETURNING uuid, ecode
             LET res = SFMT("APNS result: UUID: %1, Error code: %2",uuid,ecode)
         CATCH
-            CASE STATUS
+            CASE status
               WHEN -15553 LET res = "Timeout Push sent without error"
-              WHEN -15566 LET res = "Operation failed :", SQLCA.SQLERRM
+              WHEN -15566 LET res = "Operation failed :", sqlca.sqlerrm
               WHEN -15564 LET res = "Server has shutdown"
-              OTHERWISE   LET res = "ERROR :",STATUS
+              OTHERWISE   LET res = "ERROR :",status
             END CASE
         END TRY
     CATCH
-        LET res = SFMT("ERROR : %1 (%2)", STATUS, SQLCA.SQLERRM)
+        LET res = SFMT("ERROR : %1 (%2)", status, sqlca.sqlerrm)
     END TRY
     RETURN res
 END FUNCTION

@@ -144,8 +144,8 @@ FUNCTION tm_command( command, notification_type, registration_token,
            badge_number INTEGER
     DEFINE url STRING,
            json_obj util.JSONObject,
-           req com.HTTPRequest,
-           resp com.HTTPResponse,
+           req com.HttpRequest,
+           resp com.HttpResponse,
            json_result STRING,
            result_rec RECORD
                           status INTEGER,
@@ -154,7 +154,7 @@ FUNCTION tm_command( command, notification_type, registration_token,
     TRY
         LET url = SFMT( "http://%1:%2/token_maintainer/%3",
                         rec.tm_host, rec.tm_port, command )
-        LET req = com.HTTPRequest.create(url)
+        LET req = com.HttpRequest.Create(url)
         CALL req.setHeader("Content-Type", "application/json")
         CALL req.setMethod("POST")
         CALL req.setConnectionTimeOut(5)
@@ -182,7 +182,7 @@ FUNCTION tm_command( command, notification_type, registration_token,
            END IF
         END IF
     CATCH
-        MESSAGE SFMT("Failed to post token registration command: %1", STATUS)
+        MESSAGE SFMT("Failed to post token registration command: %1", status)
         RETURN -1
     END TRY
 END FUNCTION

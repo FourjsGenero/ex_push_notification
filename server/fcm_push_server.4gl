@@ -14,7 +14,7 @@ MAIN
     OPEN FORM f1 FROM "fcm_push_server"
     DISPLAY FORM f1
     LET rec.server_key = fgl_getenv("FCM_SERVER_KEY")
-    IF LENGTH(rec.server_key) == 0 THEN
+    IF length(rec.server_key) == 0 THEN
        LET rec.server_key = FCM_SERVER_KEY
        IF rec.server_key == "..." THEN
           DISPLAY "ERROR: The FCM_SERVER_KEY is not defined."
@@ -36,11 +36,11 @@ END MAIN
 FUNCTION fcm_send_notif_http(server_key, notif_obj)
     DEFINE server_key STRING,
            notif_obj util.JSONObject
-    DEFINE req com.HTTPRequest,
-           resp com.HTTPResponse,
+    DEFINE req com.HttpRequest,
+           resp com.HttpResponse,
            req_msg, res STRING
     TRY
-        LET req = com.HTTPRequest.Create("https://fcm.googleapis.com/fcm/send")
+        LET req = com.HttpRequest.Create("https://fcm.googleapis.com/fcm/send")
         CALL req.setHeader("Content-Type", "application/json")
         CALL req.setHeader("Authorization", SFMT("key=%1", server_key))
         CALL req.setMethod("POST")
@@ -59,7 +59,7 @@ FUNCTION fcm_send_notif_http(server_key, notif_obj)
             LET res = "Push notification sent!"
         END IF
     CATCH
-        LET res = SFMT("ERROR : %1 (%2)", STATUS, SQLCA.SQLERRM)
+        LET res = SFMT("ERROR : %1 (%2)", status, sqlca.sqlerrm)
     END TRY
     RETURN res
 END FUNCTION
