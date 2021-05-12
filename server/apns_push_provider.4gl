@@ -12,7 +12,7 @@ MAIN
     OPEN FORM f1 FROM "apns_push_provider"
     DISPLAY FORM f1
     LET rec.msg_title = "Hello, world!"
-    LET rec.user_data = "User data..."
+    LET rec.user_data = "This is a push notification demo"
     INPUT BY NAME rec.* WITHOUT DEFAULTS
              ATTRIBUTES(UNBUFFERED, ACCEPT=FALSE, CANCEL=FALSE)
         ON ACTION send_notification

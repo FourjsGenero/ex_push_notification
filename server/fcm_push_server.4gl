@@ -22,7 +22,7 @@ MAIN
        END IF
     END IF
     LET rec.msg_title = "Hello world!"
-    LET rec.user_data = "User data..."
+    LET rec.user_data = "This is a push notification demo"
     INPUT BY NAME rec.* WITHOUT DEFAULTS
              ATTRIBUTES(UNBUFFERED, ACCEPT=FALSE, CANCEL=FALSE)
         ON ACTION send_notification
@@ -46,7 +46,7 @@ FUNCTION fcm_send_notif_http(server_key, notif_obj)
         CALL req.setMethod("POST")
         LET req_msg = notif_obj.toString()
         IF req_msg.getLength() > 4096 THEN
-           LET res = "ERROR : GCM message cannot exceed 4 kilobytes"
+           LET res = "ERROR : FCM message cannot exceed 4 kilobytes"
            RETURN res
         END IF
         CALL req.doTextRequest(req_msg)
