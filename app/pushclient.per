@@ -14,9 +14,7 @@ GRID
 [                       ]
 [                       ]
 [l7                     ]
-[pm                     ]
-[l8                     ]
-[ud                     ]
+[nl                     ]
 [                       ]
 [                       ]
 }
@@ -29,8 +27,7 @@ LABEL l3: label3, TEXT="Port:";
 LABEL l4: label4, TEXT="Solution:";
 LABEL l5: label5, TEXT="User:";
 LABEL l6: label6, TEXT="Token:";
-LABEL l7: label7, TEXT="Message:";
-LABEL l8: label8, TEXT="User data:";
+LABEL l7: label7, TEXT="Notifications:";
 EDIT tmh = FORMONLY.tm_host, SCROLL;
 EDIT tmp = FORMONLY.tm_port;
 EDIT nts = FORMONLY.notification_type, NOENTRY;
@@ -38,6 +35,5 @@ EDIT unm = FORMONLY.user_name;
 BUTTON b1: register, TEXT="Register";
 BUTTON b2: unregister, TEXT="Unregister";
 TEXTEDIT rt = FORMONLY.registration_token, NOENTRY;
-EDIT pm = FORMONLY.push_message, SCROLL, NOENTRY;
-TEXTEDIT ud = FORMONLY.user_data, NOENTRY;
+TEXTEDIT nl = FORMONLY.notifications, NOENTRY, STRETCH=BOTH;
 END

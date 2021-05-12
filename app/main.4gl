@@ -11,8 +11,7 @@ DEFINE rec RECORD
            notification_type STRING,
            user_name STRING,
            registration_token STRING,
-           push_message STRING,
-           user_data STRING
+           notifications STRING
        END RECORD
 
 MAIN
@@ -200,12 +199,13 @@ FUNCTION handle_notification()
            gcm_data_s STRING,
            gcm_genero_notification_s STRING,
            gcm_genero_notification util.JSONObject,
-           i INTEGER
+           info, other_info STRING,
+           i, x INTEGER
     CALL ui.Interface.frontCall(
               "mobile", "getRemoteNotifications",
               [ ], [ notif_list ] )
     TRY
-        IF notif_list.trimLeft() NOT LIKE "[%" THEN
+        IF notif_list.trimLeft() NOT LIKE "[%" THEN -- GBC-3043 Workaround
            LET notif_list = "[ ", notif_list, " ]"
         END IF
         LET notif_array = util.JSONArray.parse(notif_list)
@@ -213,19 +213,19 @@ FUNCTION handle_notification()
            CALL setup_badge_number(notif_array.getLength())
         END IF
         FOR i=1 TO notif_array.getLength()
-            LET rec.push_message = NULL
-            LET rec.user_data = NULL
+            LET info = NULL
+            LET other_info = NULL
             LET notif_item = notif_array.get(i)
             -- Try APNs msg format
             LET aps_record = notif_item.get("aps")
             IF aps_record IS NOT NULL THEN
-               LET rec.push_message = aps_record.get("alert")
+               LET info = aps_record.get("alert")
                LET notif_data = notif_item.get("custom_data")
                IF notif_data IS NOT NULL THEN
-                  LET rec.user_data = notif_data.get("other_info")
+                  LET other_info = notif_data.get("other_info")
                END IF
             ELSE
-               -- Try GCM msg format
+               -- Try FCM msg format
                LET gcm_data_s = notif_item.get("data")
                IF gcm_data_s IS NOT NULL THEN
                   LET notif_data = util.JSONObject.parse(gcm_data_s)
@@ -234,15 +234,18 @@ FUNCTION handle_notification()
                      LET gcm_genero_notification = util.JSONObject.parse(
                                                         gcm_genero_notification_s )
                      IF gcm_genero_notification IS NOT NULL THEN
-                        LET rec.push_message = gcm_genero_notification.get("content")
+                        LET info = gcm_genero_notification.get("content")
                      END IF
-                     LET rec.user_data = notif_data.get("other_info")
+                     LET other_info = notif_data.get("other_info")
                   END IF
                END IF
             END IF
-            IF rec.push_message IS NULL THEN
-               LET rec.push_message = "Unexpected message format"
+            IF info IS NULL THEN
+               LET info = "Unexpected message format"
             END IF
+            LET x = x + 1
+            LET rec.notifications = rec.notifications, "\n",
+                    SFMT("%1(%2): %3[%4]", x, CURRENT HOUR TO SECOND, info, other_info)
         END FOR
     CATCH
         MESSAGE "Could not extract notification info"
