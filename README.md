@@ -33,7 +33,7 @@ The token maintainer must be started first, to collect device registration reque
 * Genero Studio 3.20.08+
 * GNU Make
 
-## Using Firebase Could Messaging
+## Using Firebase Cloud Messaging
 
 ### Prepare for FCM
 
