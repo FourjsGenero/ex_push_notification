@@ -196,9 +196,9 @@ FUNCTION handle_notification()
            notif_item util.JSONObject,
            notif_data util.JSONObject,
            aps_record util.JSONObject,
-           gcm_data_s STRING,
-           gcm_genero_notification_s STRING,
-           gcm_genero_notification util.JSONObject,
+           fcm_data_s STRING,
+           fcm_genero_notification_s STRING,
+           fcm_genero_notification util.JSONObject,
            info, other_info STRING,
            i, x INTEGER
     CALL ui.Interface.frontCall(
@@ -226,15 +226,15 @@ FUNCTION handle_notification()
                END IF
             ELSE
                -- Try FCM msg format
-               LET gcm_data_s = notif_item.get("data")
-               IF gcm_data_s IS NOT NULL THEN
-                  LET notif_data = util.JSONObject.parse(gcm_data_s)
+               LET fcm_data_s = notif_item.get("data")
+               IF fcm_data_s IS NOT NULL THEN
+                  LET notif_data = util.JSONObject.parse(fcm_data_s)
                   IF notif_data IS NOT NULL THEN
-                     LET gcm_genero_notification_s = notif_data.get("genero_notification")
-                     LET gcm_genero_notification = util.JSONObject.parse(
-                                                        gcm_genero_notification_s )
-                     IF gcm_genero_notification IS NOT NULL THEN
-                        LET info = gcm_genero_notification.get("content")
+                     LET fcm_genero_notification_s = notif_data.get("genero_notification")
+                     LET fcm_genero_notification = util.JSONObject.parse(
+                                                        fcm_genero_notification_s )
+                     IF fcm_genero_notification IS NOT NULL THEN
+                        LET info = fcm_genero_notification.get("content")
                      END IF
                      LET other_info = notif_data.get("other_info")
                   END IF
