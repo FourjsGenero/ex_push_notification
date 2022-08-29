@@ -64,7 +64,6 @@ FUNCTION handle_registrations()
        END TRY
        IF req IS NULL THEN -- timeout
           DISPLAY SFMT("HTTP request timeout...: %1", CURRENT YEAR TO FRACTION)
-          CALL check_apns_feedback()
           CALL show_tokens()
           CONTINUE WHILE
        END IF
@@ -186,49 +185,6 @@ LABEL pc_end:
     DISPLAY result_rec.message
     LET result = util.JSON.stringify(result_rec)
     RETURN result
-END FUNCTION
-
-FUNCTION check_apns_feedback()
-    DEFINE req com.TcpRequest,
-           resp com.TcpResponse,
-           feedback DYNAMIC ARRAY OF RECORD
-                        timestamp INTEGER,
-                        deviceToken STRING
-                    END RECORD,
-           timestamp DATETIME YEAR TO FRACTION(3),
-           token VARCHAR(250),
-           i INTEGER,
-           data BYTE
-
-    IF arg_val(1)!="APNS" THEN RETURN END IF
-    DISPLAY "Checking APNs feedback service..."
-
-    LOCATE data IN MEMORY
-
-    TRY
-        LET req = com.TcpRequest.Create( "tcps://feedback.push.apple.com:2196" )
-        CALL req.setKeepConnection(true)
-        CALL req.setTimeOut(2)
-        CALL req.doRequest()
-        LET resp = req.getResponse()
-        CALL resp.getDataResponse(data)
-        CALL com.APNS.DecodeFeedback(data,feedback)
-        FOR i=1 TO feedback.getLength()
-            LET timestamp = util.Datetime.fromSecondsSinceEpoch(feedback[i].timestamp)
-            LET timestamp = util.Datetime.toUTC(timestamp)
-            LET token = feedback[i].deviceToken
-            DELETE FROM tokens
-                  WHERE registration_token = token
-                    AND reg_date < timestamp
-        END FOR
-    CATCH
-        CASE status
-            WHEN -15553 DISPLAY "APNS feedback: Timeout: No feedback message"
-            WHEN -15566 DISPLAY "APNS feedback: Operation failed :", sqlca.sqlerrm
-            WHEN -15564 DISPLAY "APNS feedback: Server has shutdown"
-            OTHERWISE   DISPLAY "APNS feedback: ERROR :",status
-        END CASE
-    END TRY
 END FUNCTION
 
 FUNCTION show_tokens()

@@ -1,6 +1,10 @@
-IMPORT com
-IMPORT security
 IMPORT util
+
+DEFINE APNS_APPID STRING
+DEFINE APNS_CERTIF STRING
+
+--CONSTANT APNS_DEVICE_URL = "https://api.push.apple.com:443/3/device/%1"
+CONSTANT APNS_DEVICE_URL = "https://api.sandbox.push.apple.com:443/3/device/%1"
 
 MAIN
     DEFINE rec RECORD
@@ -8,6 +12,16 @@ MAIN
                  user_data STRING,
                  info STRING
            END RECORD
+    LET APNS_APPID = fgl_getenv("APNS_APPID")
+    IF APNS_APPID IS NULL THEN
+        DISPLAY "ERROR: Must define APNS_APPID env var of your APNS app (Bundle ID)"
+        EXIT PROGRAM 1
+    END IF
+    LET APNS_CERTIF = fgl_getenv("APNS_CERTIF")
+    IF APNS_CERTIF IS NULL THEN
+        DISPLAY "ERROR: Must define APNS_CERTIF env var to .pem certification file"
+        EXIT PROGRAM 1
+    END IF
     CONNECT TO "tokendb+driver='dbmsqt'"
     OPEN FORM f1 FROM "apns_push_provider"
     DISPLAY FORM f1
@@ -22,61 +36,43 @@ MAIN
     END INPUT
 END MAIN
 
-FUNCTION apns_send_notif_http(deviceTokenHexa, notif_obj)
+FUNCTION apns_send_notif_http(deviceTokenHexa, push_type, priority, notif_obj)
     DEFINE deviceTokenHexa STRING,
+           push_type STRING,
+           priority INTEGER,
            notif_obj util.JSONObject
-    DEFINE req com.TcpRequest,
-           resp com.TcpResponse,
-           uuid STRING,
-           ecode INTEGER,
-           dt DATETIME YEAR TO SECOND,
+    DEFINE dt DATETIME YEAR TO SECOND,
            exp INTEGER,
-           data, err BYTE,
-           res STRING
-
-    LOCATE data IN MEMORY
-    LOCATE err IN MEMORY
+           data STRING,
+           cmd STRING,
+           s INTEGER
 
     LET dt = CURRENT + INTERVAL(10) MINUTE TO MINUTE
     LET exp = util.Datetime.toSecondsSinceEpoch(dt)
 
-    TRY  
-        --LET req = com.TcpRequest.Create( "tcps://gateway.push.apple.com:2195" )
-        LET req = com.TcpRequest.Create( "tcps://gateway.sandbox.push.apple.com:2195" )
-        CALL req.setKeepConnection(true)
-        CALL req.setTimeOut(2) # Wait 2 seconds for APNs to return error code
-        LET uuid = security.RandomGenerator.CreateRandomString(4)
-        DISPLAY "PUSH MESSAGE: ", deviceTokenHexa, "/", notif_obj.toString()
-        CALL com.APNS.EncodeMessage(
-                  data,
-                  security.HexBinary.ToBase64(deviceTokenHexa),
-                  notif_obj.toString(),
-                  uuid,
-                  exp,
-                  10
-             )
-        IF length(data) > 2000 THEN
-           LET res = "ERROR : APNS payload cannot exceed 2 kilobytes"
-           RETURN res
-        END IF
-        CALL req.doDataRequest(data)
-        TRY
-            LET resp = req.getResponse()
-            CALL resp.getDataResponse(err)        
-            CALL com.APNS.DecodeError(err) RETURNING uuid, ecode
-            LET res = SFMT("APNS result: UUID: %1, Error code: %2",uuid,ecode)
-        CATCH
-            CASE status
-              WHEN -15553 LET res = "Timeout Push sent without error"
-              WHEN -15566 LET res = "Operation failed :", sqlca.sqlerrm
-              WHEN -15564 LET res = "Server has shutdown"
-              OTHERWISE   LET res = "ERROR :",status
-            END CASE
-        END TRY
-    CATCH
-        LET res = SFMT("ERROR : %1 (%2)", status, sqlca.sqlerrm)
-    END TRY
-    RETURN res
+    IF length(push_type) == 0 THEN
+        LET push_type = "alert"
+    END IF
+
+    LET data = notif_obj.toString()
+
+    LET cmd = "curl -vs --http2 ",
+              -- || ' -k ' # insecure??? => Leo
+              SFMT('--header "apns-topic: %1" ',APNS_APPID),
+              SFMT('--header "apns-push-type: %1" ',push_type),
+              IIF(priority IS NOT NULL, SFMT('--header "apns-priority: %1" ',priority), ""),
+              SFMT('--cert "%1" ',APNS_CERTIF), -- *.pem
+              SFMT("--data '%1' ",data), -- JSON string!
+              SFMT(APNS_DEVICE_URL,deviceTokenHexa)
+
+    DISPLAY "Executing:\n", cmd
+    RUN cmd RETURNING s
+    IF s != 0 THEN
+        RETURN "ERROR : Failed to execute CURL command"
+    ELSE
+        RETURN cmd
+    END IF
+
 END FUNCTION
 
 FUNCTION apns_simple_popup_notif(notif_obj, msg_title, user_data, badge_number)
@@ -152,7 +148,7 @@ FUNCTION apns_send_message(msg_title, user_data)
         LET notif_obj = util.JSONObject.create()
         CALL apns_simple_popup_notif(notif_obj, msg_title, user_data, new_badge)
         LET info_msg = info_msg, "\n",
-            apns_send_notif_http(reg_ids[i].token, notif_obj)
+            apns_send_notif_http(reg_ids[i].token, NULL, NULL, notif_obj)
     END FOR
     RETURN info_msg
 END FUNCTION
