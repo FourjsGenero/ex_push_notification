@@ -57,7 +57,6 @@ FUNCTION apns_send_notif_http(deviceTokenHexa, push_type, priority, notif_obj)
     LET data = notif_obj.toString()
 
     LET cmd = "curl -vs --http2 ",
-              -- || ' -k ' # insecure??? => Leo
               SFMT('--header "apns-topic: %1" ',APNS_APPID),
               SFMT('--header "apns-push-type: %1" ',push_type),
               IIF(priority IS NOT NULL, SFMT('--header "apns-priority: %1" ',priority), ""),
