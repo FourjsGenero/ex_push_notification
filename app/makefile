@@ -10,12 +10,8 @@ FCM_CONFIG_FILE=resources/android/google-services.json
 
 all:: $(FORMS) $(MAIN)
 
-BUILDDIR=/tmp/build_pushdemo
-$(BUILDDIR):
-	$(MKDIR) $(BUILDDIR)
-
-APPDIR=$(BUILDDIR)/appdir
-$(APPDIR): $(BUILDDIR)
+APPDIR=/tmp/appdir_pushdemo
+$(APPDIR):
 	$(MKDIR) $(APPDIR)
 
 appdir:: all $(APPDIR)

@@ -1,6 +1,6 @@
-if test -z "$ANDROID_SDK_ROOT"
+if test -z "$ANDROID_HOME"
 then
-    echo "Must set ANDROID_SDK_ROOT env var"
+    echo "Must set ANDROID_HOME env var"
     exit 1
 fi
 if test -z "$JAVA_HOME"
@@ -9,15 +9,15 @@ then
     exit 1
 fi
 
-# These are not required: Defined implicitely by gmabuildtool...
-# APP_PERMISSIONS= com.google.android.c2dm.permission.RECEIVE, com.example.pushclient.permission.C2D_MESSAGE
-#    --build-app-permissions "$APP_PERMISSIONS" 
+# Permission android.permission.POST_NOTIFICATIONS is set by default with GMA 4.01.06
 
-builddir=/tmp/build_pushdemo
-appdir=$builddir/appdir
-outdir=$builddir/gma
+appdir=/tmp/appdir_pushdemo
 
-mkdir -p $outdir
+rootdir=/tmp/build_pushdemo
+rm -rf $rootdir
+mkdir -p $rootdir
+
+outdir=/tmp
 
 if test -n "$FGLGBCDIR"
 then
@@ -25,16 +25,16 @@ then
 fi
 
 gmabuildtool build ${bgr_option} \
-    --android-sdk $ANDROID_SDK_ROOT \
+    --android-sdk $ANDROID_HOME \
     --clean \
-    --build-force-scaffold-update --build-quietly \
-    --build-output-apk-name pushdemo \
     --build-apk-outputs $outdir \
-    --build-app-genero-program $appdir \
+    --build-output-apk-name pushdemo \
+    --root-path $rootdir \
+    --main-app-path $appdir/main.42m \
     --build-app-name "Push Demo" \
     --build-app-package-name com.fourjs.pushdemo \
-    --build-app-version-code 1000 \
-    --build-app-version-name "1.0" \
+    --build-app-version-code 1010 \
+    --build-app-version-name "1.1" \
     --build-mode release \
     --build-app-icon-mdpi   resources/android/icons/icon_48x48.png \
     --build-app-icon-hdpi   resources/android/icons/icon_72x72.png \

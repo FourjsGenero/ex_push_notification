@@ -16,6 +16,8 @@ DEFINE rec RECORD
 
 MAIN
 
+    OPTIONS INPUT WRAP, FIELD ORDER FORM
+
     CALL load_settings()
 
     OPEN FORM f1 FROM "pushclient"
@@ -38,6 +40,8 @@ MAIN
          CALL save_settings()
       ON ACTION notificationpushed
          CALL handle_notification()
+      ON ACTION notificationselected
+         CALL handle_notification_selection()
       ON ACTION quit ATTRIBUTES(TEXT="Quit")
          CALL save_settings()
          EXIT INPUT
@@ -45,11 +49,11 @@ MAIN
 
 END MAIN
 
-FUNCTION get_settings_file()
+FUNCTION get_settings_file() RETURNS STRING
     RETURN os.Path.join(os.Path.pwd(),"pushclient.dat")
 END FUNCTION
 
-FUNCTION load_settings()
+FUNCTION load_settings() RETURNS ()
     DEFINE fn, data STRING,
            ch base.Channel
     LET fn = get_settings_file()
@@ -69,7 +73,7 @@ FUNCTION load_settings()
     END IF
 END FUNCTION
 
-FUNCTION save_settings()
+FUNCTION save_settings() RETURNS ()
     DEFINE fn, data STRING,
            ch base.Channel
     LET data = util.JSON.stringify( rec )
@@ -80,9 +84,10 @@ FUNCTION save_settings()
     CALL ch.close()
 END FUNCTION
 
-FUNCTION register(notification_type, app_user)
-    DEFINE notification_type STRING,
-           app_user STRING
+FUNCTION register(
+    notification_type STRING,
+    app_user STRING
+) RETURNS STRING
     DEFINE registration_token STRING
     TRY
         CALL ui.Interface.frontCall(
@@ -100,10 +105,11 @@ FUNCTION register(notification_type, app_user)
     RETURN registration_token
 END FUNCTION
 
-FUNCTION unregister(notification_type, registration_token, app_user)
-    DEFINE notification_type STRING,
-           registration_token STRING,
-           app_user STRING
+FUNCTION unregister(
+    notification_type STRING,
+    registration_token STRING,
+    app_user STRING
+) RETURNS ()
     IF tm_command( "unregister", notification_type,
                    registration_token, app_user, 0 ) < 0 THEN
        RETURN
@@ -113,19 +119,19 @@ FUNCTION unregister(notification_type, registration_token, app_user)
                 "mobile", "unregisterFromRemoteNotifications", 
                 [ ], [ ] )
     CATCH
-        MESSAGE "Un-registration failed (broacast service)."
+        MESSAGE "Un-registration failed."
         RETURN
     END TRY
     MESSAGE "Un-registration succeeded"
 END FUNCTION
 
-FUNCTION tm_command( command, notification_type, registration_token,
-                     app_user, badge_number )
-    DEFINE command STRING,
-           notification_type STRING,
-           registration_token STRING,
-           app_user STRING,
-           badge_number INTEGER
+FUNCTION tm_command(
+    command STRING,
+    notification_type STRING,
+    registration_token STRING,
+    app_user STRING,
+    badge_number INTEGER
+) RETURNS INTEGER
     DEFINE url STRING,
            json_obj util.JSONObject,
            req com.HttpRequest,
@@ -171,8 +177,7 @@ FUNCTION tm_command( command, notification_type, registration_token,
     END TRY
 END FUNCTION
 
-FUNCTION setup_badge_number(consumed)
-    DEFINE consumed INTEGER
+FUNCTION setup_badge_number(consumed INTEGER) RETURNS ()
     DEFINE badge_number INTEGER
     TRY -- If the front call fails, we are not on iOS...
         CALL ui.Interface.frontCall("ios", "getBadgeNumber", [], [badge_number])
@@ -190,7 +195,7 @@ FUNCTION setup_badge_number(consumed)
     END IF
 END FUNCTION
 
-FUNCTION handle_notification()
+FUNCTION handle_notification() RETURNS ()
     DEFINE notif_list STRING,
            notif_array util.JSONArray,
            notif_item util.JSONObject,
@@ -249,5 +254,25 @@ FUNCTION handle_notification()
         END FOR
     CATCH
         MESSAGE "Could not extract notification info"
+    END TRY
+END FUNCTION
+
+FUNCTION handle_notification_selection() RETURNS ()
+    DEFINE notif_array DYNAMIC ARRAY OF RECORD
+               id STRING,
+               type STRING
+           END RECORD,
+           i INTEGER
+    TRY
+        CALL ui.Interface.frontCall("mobile", "getLastNotificationInteractions",
+                                    [], [notif_array] )
+        LET rec.notifications = NULL
+        FOR i=1 TO notif_array.getLength()
+            LET rec.notifications = rec.notifications, "\n",
+                    SFMT("%1(%2): ID=%3, TYPE=%4", i, CURRENT HOUR TO SECOND,
+                         notif_array[i].id, notif_array[i].type)
+        END FOR
+    CATCH
+        MESSAGE "Could not get selected notifications info"
     END TRY
 END FUNCTION

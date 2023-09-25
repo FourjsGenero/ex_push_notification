@@ -9,7 +9,7 @@ MAIN
     CALL handle_registrations()
 END MAIN
 
-FUNCTION open_create_db()
+FUNCTION open_create_db() RETURNS ()
     DEFINE dbsrc VARCHAR(100),
            x INTEGER
     IF NOT os.Path.exists("tokendb") THEN
@@ -32,14 +32,14 @@ FUNCTION open_create_db()
     END IF
 END FUNCTION
 
-FUNCTION create_empty_file(fn)
-    DEFINE fn STRING, c base.Channel
+FUNCTION create_empty_file(fn STRING) RETURNS ()
+    DEFINE c base.Channel
     LET c = base.Channel.create()
     CALL c.openFile(fn, "w")
     CALL c.close()
 END FUNCTION
 
-FUNCTION handle_registrations()
+FUNCTION handle_registrations() RETURNS ()
     DEFINE req com.HttpServiceRequest,
            url, method, version, content_type STRING,
            reg_data, reg_result STRING
@@ -103,8 +103,7 @@ FUNCTION handle_registrations()
     END WHILE
 END FUNCTION
 
-FUNCTION process_command(url, data)
-    DEFINE url, data STRING
+FUNCTION process_command(url STRING, data STRING) RETURNS STRING
     DEFINE data_rec RECORD
                notification_type VARCHAR(10),
                registration_token VARCHAR(250),
@@ -187,7 +186,7 @@ LABEL pc_end:
     RETURN result
 END FUNCTION
 
-FUNCTION show_tokens()
+FUNCTION show_tokens() RETURNS ()
     DEFINE rec RECORD -- Use CHAR to format
                id INTEGER,
                notification_type CHAR(10),

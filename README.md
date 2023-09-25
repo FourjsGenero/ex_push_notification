@@ -25,13 +25,14 @@ The token maintainer must be started first, to collect device registration reque
 
 ## Prerequisites
 
-* Genero BDL 3.20.09+
-* Genero Mobile for Android 1.40.09+
-* Genero Mobile for iOS 1.40.07+
-* Genero Browser Client 1.00.56+
-* Genero Desktop Client 3.20.12+
-* Genero Studio 3.20.08+
-* GNU Make
+* Genero BDL 4.01.05+
+* Genero Mobile for Android 4.01.06+
+* Genero Mobile for iOS 4.01.04+
+* Genero Browser Client 4.01.12+
+* Genero Desktop Client 4.01.06+
+* Genero Studio 4.01.01+
+* Java 17+
+* GNU Make 4.3+
 
 ## Using Firebase Cloud Messaging
 
@@ -77,7 +78,8 @@ $ make package_gma
 Go to the `server` sub-directory.
 
 In fcm_push_server.4gl:
-* Define the FCM_SERVER_KEY constant with the FCM Server Key.
+* Define the FCM_SERVER_KEY constant with the FCM Server Key. For testing, you can also
+define the FCM_SERVER_KEY environment variable.
 
 In token_maintainer.4gl:
 * Define the DEFAULT_PORT constant with the TCP port number to be used in FGLAPPSERVER.

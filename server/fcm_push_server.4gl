@@ -33,9 +33,10 @@ MAIN
     END INPUT
 END MAIN
 
-FUNCTION fcm_send_notif_http(server_key, notif_obj)
-    DEFINE server_key STRING,
-           notif_obj util.JSONObject
+FUNCTION fcm_send_notif_http(
+    server_key STRING,
+    notif_obj util.JSONObject
+) RETURNS STRING
     DEFINE req com.HttpRequest,
            resp com.HttpResponse,
            req_msg, res STRING
@@ -64,10 +65,12 @@ FUNCTION fcm_send_notif_http(server_key, notif_obj)
     RETURN res
 END FUNCTION
 
-FUNCTION fcm_simple_popup_notif(reg_ids, notif_obj, popup_msg, user_data)
-    DEFINE reg_ids DYNAMIC ARRAY OF STRING,
-           notif_obj util.JSONObject,
-           popup_msg, user_data STRING
+FUNCTION fcm_simple_popup_notif(
+    reg_ids DYNAMIC ARRAY OF STRING,
+    notif_obj util.JSONObject,
+    popup_msg STRING,
+    user_data STRING
+) RETURNS ()
     DEFINE data_obj, popup_obj util.JSONObject
 
     CALL notif_obj.put("registration_ids", reg_ids)
@@ -86,8 +89,7 @@ FUNCTION fcm_simple_popup_notif(reg_ids, notif_obj, popup_msg, user_data)
 
 END FUNCTION
 
-FUNCTION fcm_collect_tokens(reg_ids)
-    DEFINE reg_ids DYNAMIC ARRAY OF STRING
+FUNCTION fcm_collect_tokens(reg_ids DYNAMIC ARRAY OF STRING) RETURNS ()
     DEFINE rec RECORD
                id INTEGER,
                notification_type VARCHAR(10),
@@ -106,8 +108,11 @@ FUNCTION fcm_collect_tokens(reg_ids)
     END FOREACH
 END FUNCTION
 
-FUNCTION fcm_send_text(server_key, msg_title, user_data)
-    DEFINE server_key, msg_title, user_data STRING
+FUNCTION fcm_send_text(
+    server_key STRING,
+    msg_title STRING,
+    user_data STRING
+) RETURNS STRING
     DEFINE reg_ids DYNAMIC ARRAY OF STRING,
            notif_obj util.JSONObject,
            info_msg STRING

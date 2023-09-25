@@ -36,11 +36,12 @@ MAIN
     END INPUT
 END MAIN
 
-FUNCTION apns_send_notif_http(deviceTokenHexa, push_type, priority, notif_obj)
-    DEFINE deviceTokenHexa STRING,
-           push_type STRING,
-           priority INTEGER,
-           notif_obj util.JSONObject
+FUNCTION apns_send_notif_http(
+    deviceTokenHexa STRING,
+    push_type STRING,
+    priority INTEGER,
+    notif_obj util.JSONObject
+) RETURNS STRING
     DEFINE dt DATETIME YEAR TO SECOND,
            exp INTEGER,
            data STRING,
@@ -74,10 +75,12 @@ FUNCTION apns_send_notif_http(deviceTokenHexa, push_type, priority, notif_obj)
 
 END FUNCTION
 
-FUNCTION apns_simple_popup_notif(notif_obj, msg_title, user_data, badge_number)
-    DEFINE notif_obj util.JSONObject,
-           msg_title, user_data STRING,
-           badge_number INTEGER
+FUNCTION apns_simple_popup_notif(
+    notif_obj util.JSONObject,
+    msg_title STRING,
+    user_data STRING,
+    badge_number INTEGER
+) RETURNS ()
     DEFINE aps_obj, data_obj util.JSONObject
 
     LET aps_obj = util.JSONObject.create()
@@ -94,11 +97,12 @@ FUNCTION apns_simple_popup_notif(notif_obj, msg_title, user_data, badge_number)
 
 END FUNCTION
 
-FUNCTION apns_collect_tokens(reg_ids)
-    DEFINE reg_ids DYNAMIC ARRAY OF RECORD
+FUNCTION apns_collect_tokens(
+    reg_ids DYNAMIC ARRAY OF RECORD
                        token STRING,
                        badge INTEGER
                    END RECORD
+) RETURNS ()
     DEFINE rec RECORD
                id INTEGER,
                notification_type VARCHAR(10),
@@ -119,16 +123,16 @@ FUNCTION apns_collect_tokens(reg_ids)
     END FOREACH
 END FUNCTION
 
-FUNCTION save_badge_number(token, badge)
-    DEFINE token STRING,
-           badge INT
+FUNCTION save_badge_number(token STRING, badge INTEGER) RETURNS ()
     UPDATE tokens SET
         badge_number = badge
     WHERE registration_token = token
 END FUNCTION
 
-FUNCTION apns_send_message(msg_title, user_data)
-    DEFINE msg_title, user_data STRING
+FUNCTION apns_send_message(
+    msg_title STRING,
+    user_data STRING
+) RETURNS STRING
     DEFINE reg_ids DYNAMIC ARRAY OF RECORD
                        token STRING,
                        badge INTEGER
