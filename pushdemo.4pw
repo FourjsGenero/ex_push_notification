@@ -69,9 +69,7 @@
     <Language name="Genero">
       <BuildRuleList>
         <BuildRule additionalDependencies="" commands="$(fglcomp) $(CompilerOptions) &quot;$(InputPath)&quot;;$(move) &quot;$(InputDir)/$(InputBaseName).42m&quot; &quot;$(TargetDir)/$(InputBaseName).42m&quot;" description="Genero compiler" enabled="true" fileType="application/genero-4gl" intermediateFiles="" outputFiles="$(TargetDir)/$(InputBaseName).42m"/>
-        <BuildRule additionalDependencies="" commands="$(copy) $(InputPath) $(TargetDir)/$(InputName)" description="FglProfile" enabled="false" fileType="application/genero-fglprofile" intermediateFiles="" outputFiles="$(TargetDir)/$(InputName)"/>
-        <BuildRule additionalDependencies="" commands="$(copy) $(InputDir)/$(InputName) $(TargetDir)/$(InputName)" description="Action Defaults" enabled="true" fileType="application/genero-4ad" intermediateFiles="" outputFiles="$(TargetDir)/$(InputName)"/>
-        <BuildRule additionalDependencies="" commands="$(copy) $(InputPath) $(TargetDir)/$(InputName)" description="FCM config file" enabled="true" fileType="text/json" intermediateFiles="" outputFiles="$(TargetDir)/$(InputName)"/>
+        <BuildRule additionalDependencies="" commands="$(copy) &quot;$(InputDir)/$(InputName).4ad&quot; &quot;$(TargetDir)/$(InputName).4ad&quot;" description="Action Defaults" enabled="false" fileType="application/genero-4ad" intermediateFiles="" outputFiles="$(TargetDir)/$(InputName).4ad"/>
       </BuildRuleList>
       <LinkRuleList/>
       <VariableList/>
@@ -83,8 +81,8 @@
       <File filePath="README.md"/>
     </Library>
   </Group>
-  <Group id="42846165" label="Packages" language="Genero" targetDirectory="$(ProjectDir)/build">
-    <Package binaryName="pushdemo_android" dependencies="1709996732,-158894972" distDirectory="$(ProjectDir)/build/package" id="457313632" label="pushdemo_android" platform="Android" rootDirectory="$(ProjectDir)/build/package">
+  <Group id="42846165" label="Packages" language="Genero (no link)" targetDirectory="$(ProjectDir)/build">
+    <Package binaryName="pushdemo_android" dependencies="1709996732,-158894972" distDirectory="$(ProjectDir)/build/package" id="457313632" label="pushdemo_android" platform="Android" rootDirectory="$(ProjectDir)/build/appdir">
       <DynamicProperty name="icon-hdpi" value="$(ProjectDir)/app/resources/android/icons/icon_72x72.png"/>
       <DynamicProperty name="icon-mdpi" value="$(ProjectDir)/app/resources/android/icons/icon_48x48.png"/>
       <DynamicProperty name="icon-xhdpi" value="$(ProjectDir)/app/resources/android/icons/icon_96x96.png"/>
@@ -94,9 +92,10 @@
       <DynamicProperty name="packageVersion" value="1010"/>
       <DynamicProperty name="packageVersionName" value="1.1"/>
       <DynamicProperty name="permissions" value="ACCESS_COARSE_LOCATION;ACCESS_FINE_LOCATION;ACCESS_NETWORK_STATE;ACCESS_WIFI_STATE;CHANGE_NETWORK_STATE;GET_ACCOUNTS;INSTALL_SHORTCUT;INTERNET;MOUNT_FORMAT_FILESYSTEMS;READ_CONTACTS;READ_EXTERNAL_STORAGE;READ_LOGS;READ_PHONE_STATE;WRITE_EXTERNAL_STORAGE"/>
-      <Directory description="Binaries" destinationDirectory="$(ProjectDir)/build/package" includedFiles="*.42?,google-services.json" label="Binaries" recursive="false" sourceDirectory="$(ProjectDir)/build/appdir"/>
+      <Directory description="Binaries" includedFiles="*.42?" label="Binaries" recursive="false" sourceDirectory="$(ProjectDir)/build/appdir"/>
+      <Directory includedFiles="google-services.json" label="Resources" sourceDirectory="$(ProjectDir)/app/resources/android"/>
     </Package>
-    <Package binaryName="pushdemo_ios" description="iOS package" distDirectory="$(ProjectDir)/build/package" excludeFromBuild="true" id="14664432" label="pushdemo_ios" platform="iOS" rootDirectory="$(ProjectDir)/build/package">
+    <Package binaryName="pushdemo_ios" description="iOS package" distDirectory="$(ProjectDir)/build/package" excludeFromBuild="true" id="14664432" label="pushdemo_ios" platform="iOS" rootDirectory="$(ProjectDir)/build/appdir">
       <DynamicProperty name="icon120x120" value="$(ProjectDir)/app/resources/ios/icons/icon_120x120.png"/>
       <DynamicProperty name="icon152x152" value="$(ProjectDir)/app/resources/ios/icons/icon_152x152.png"/>
       <DynamicProperty name="icon29x29" value="$(ProjectDir)/app/resources/ios/icons/icon_29x29.png"/>
@@ -111,7 +110,7 @@
       <Directory description="Binaries" destinationDirectory="$(ProjectDir)/build/package" includedFiles="*.42?" label="Binaries" recursive="false" sourceDirectory="$(ProjectDir)/build/appdir"/>
     </Package>
   </Group>
-  <Group id="380104692" label="PushDemo" language="Genero (no link)">
+  <Group id="380104692" label="PushDemo" language="Genero">
     <Application binaryName="main" dependencies="296203105,-158894972,1782892168,191027224,1646790611" description="Mobile application (desktop build)" environment="value:FGLPROFILE=$(ProjectDir)/app/fglprofile" id="1709996732" label="main" targetDirectory="$(ProjectDir)/build/appdir">
       <Configuration description="Mobile application (desktop build)" id="1470845364" label="main"/>
       <VirtualFolder label="Forms">
