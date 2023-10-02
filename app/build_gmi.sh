@@ -19,15 +19,12 @@ then
     exit 1
 fi
 
-builddir=/tmp/build_pushdemo
-appdir=$builddir/appdir
-outdir=$builddir/gmi
-
-mkdir -p $outdir
+appdir=/tmp/appdir_pushdemo
+outdir=/tmp
 
 gmibuildtool \
    --app-name "Push Demo" \
-   --app-version "v1.0" \
+   --app-version "v1.1" \
    --output $outdir/pushdemo.ipa \
    --program-files $appdir \
    --icons resources/ios/icons \
