@@ -43,6 +43,21 @@ get the Server Key and the google-services.json configuration file.
 
 For more details, see the topic about FCM in the [Genero documentation](http://4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_fgl_mobile_push_notif_gcm.html)
 
+### Get the Google Auth JAR files
+
+The fcm_push_server.4gl program uses Java class com.google.auth.oauth2.GoogleCredentials
+and therefore you need to get the set of JAR files of the Google Auth API. The simplest
+way to get all required JAR files is to use a Maven project.
+
+* If not available on your computer, install Apache Maven
+* Go to the directory ext/google_auth
+* Check the pom.xml file
+* Download the JAR files with following command:
+```
+$ mvn dependency:copy-dependencies
+```
+
+
 ### Build the Android app
 
 Plug your Android device.
@@ -171,7 +186,7 @@ For more details, see
 Create your fglprofile file, define FGLPROFILE to point to this file.
 
 ```
-$ export FGLPROFILE=myprofile 
+$ export FGLPROFILE=myprofile
 ```
 
 Setup the Web Services `security` entries to specify the certificate file and private key file:
