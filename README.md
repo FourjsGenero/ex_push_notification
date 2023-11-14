@@ -25,14 +25,15 @@ The token maintainer must be started first, to collect device registration reque
 
 ## Prerequisites
 
+* Java 17+
+* GNU Make 4.3+
+* Apache Maven 3.9.5+
 * Genero BDL 4.01.05+
 * Genero Mobile for Android 4.01.06+
 * Genero Mobile for iOS 4.01.04+
 * Genero Browser Client 4.01.12+
 * Genero Desktop Client 4.01.06+
 * Genero Studio 4.01.01+
-* Java 17+
-* GNU Make 4.3+
 
 ## Using Firebase Cloud Messaging
 
@@ -55,6 +56,10 @@ way to get all required JAR files is to use a Maven project.
 * Download the JAR files with following command:
 ```
 $ mvn dependency:copy-dependencies
+```
+* Set the CLASSPATH environment variable with:
+```
+$ export CLASSPATH=$CLASSPATH:`sh ./get_classpath.sh`
 ```
 
 
