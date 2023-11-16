@@ -217,9 +217,6 @@ FUNCTION handle_notification() RETURNS ()
            notif_item util.JSONObject,
            notif_data util.JSONObject,
            aps_record util.JSONObject,
-           fcm_data_s STRING,
-           fcm_genero_notification_s STRING,
-           fcm_genero_notification util.JSONObject,
            info, other_info STRING,
            i, x INTEGER
     CALL ui.Interface.frontCall(
@@ -247,19 +244,9 @@ FUNCTION handle_notification() RETURNS ()
                END IF
             ELSE
                -- Try FCM msg format
-               LET fcm_data_s = notif_item.get("data")
-               IF fcm_data_s IS NOT NULL THEN
-                  LET notif_data = util.JSONObject.parse(fcm_data_s)
-                  IF notif_data IS NOT NULL THEN
-                     LET fcm_genero_notification_s = notif_data.get("genero_notification")
-                     LET fcm_genero_notification = util.JSONObject.parse(
-                                                        fcm_genero_notification_s )
-                     IF fcm_genero_notification IS NOT NULL THEN
-                        LET info = fcm_genero_notification.get("content")
-                     END IF
-                     LET other_info = notif_data.get("other_info")
-                  END IF
-               END IF
+               LET notif_data = notif_item.get("data")
+               LET info = notif_data.get("content")
+               LET other_info = notif_data.get("other_info")
             END IF
             IF info IS NULL THEN
                LET info = "Unexpected message format"

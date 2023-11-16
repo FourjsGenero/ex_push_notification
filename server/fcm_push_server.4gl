@@ -10,7 +10,6 @@ CONSTANT FCM_PUSH_BASE_URI = "https://fcm.googleapis.com/v1/projects/%1/messages
 CONSTANT FCM_SCOPE_MESSAGING = "https://www.googleapis.com/auth/firebase.messaging"
 
 CONSTANT FCM_PROJECT_NUM = "..."
-CONSTANT FCM_SENDER_ID = "..."
 CONSTANT FCM_APP_CRED = "..."
 
 CONSTANT FCM_HTTP_CONTENT_TYPE = "application/json; charset=utf-8"
@@ -19,7 +18,8 @@ TYPE t_push_rec RECORD
        project_num STRING,
        access_token STRING,
        msg_title STRING,
-       user_data STRING,
+       content STRING,
+       other_info STRING,
        info STRING
      END RECORD
 
@@ -30,7 +30,7 @@ TYPE t_fcm_message RECORD
            title STRING,
            content STRING,
            icon STRING,
-           extra_data STRING
+           other_info STRING
          END RECORD
        END RECORD
      END RECORD
@@ -46,7 +46,8 @@ MAIN
     LET rec.project_num = get_project_num()
     LET rec.access_token = get_access_token()
     LET rec.msg_title = "Hello world!"
-    LET rec.user_data = "This is a push notification demo"
+    LET rec.content = "This is a push notification demo"
+    LET rec.other_info = "Other info..."
     INPUT BY NAME rec.* WITHOUT DEFAULTS
              ATTRIBUTES(UNBUFFERED, ACCEPT=FALSE, CANCEL=FALSE)
         ON ACTION send_notification
@@ -161,7 +162,8 @@ FUNCTION fcm_send_notification(rec t_push_rec) RETURNS STRING
        RETURN "No registered devices..."
     END IF
     LET msgrec.message.data.title = rec.msg_title
-    LET msgrec.message.data.content = rec.user_data
+    LET msgrec.message.data.content = rec.content
+    LET msgrec.message.data.other_info = rec.other_info
     LET msgrec.message.data.icon = "genero_notification"
     FOR x=1 TO reg_ids.getLength()
         LET msgrec.message.token = reg_ids[x]

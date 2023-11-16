@@ -7,9 +7,10 @@ GRID
 Project Num:  [f1                       ]
 Access Token: [f2                                      ]
 Message:      [f3                                      ]
-User data:    [f4                                      ]
+Content:      [f4                                      ]
+Other info:   [f5                                      ]
               [b1                                      ]
-Result:       [f5                                      ]
+Result:       [f6                                      ]
               [                                        ]
               [                                        ]
 }
@@ -19,7 +20,8 @@ ATTRIBUTES
 EDIT f1 = FORMONLY.project_num, SCROLL, NOENTRY;
 EDIT f2 = FORMONLY.access_token, SCROLL, NOENTRY;
 EDIT f3 = FORMONLY.msg_title, SCROLL;
-EDIT f4 = FORMONLY.user_data, SCROLL;
-TEXTEDIT f5 = FORMONLY.info, STRETCH=BOTH;
+EDIT f4 = FORMONLY.content, SCROLL;
+EDIT f5 = FORMONLY.other_info, SCROLL;
+TEXTEDIT f6 = FORMONLY.info, STRETCH=BOTH;
 BUTTON b1: send_notification, TEXT="Send";
 END
