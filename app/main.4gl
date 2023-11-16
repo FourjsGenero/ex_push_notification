@@ -38,6 +38,8 @@ MAIN
          CALL unregister(rec.notification_type, rec.registration_token, rec.user_name)
          LET rec.registration_token = NULL
          CALL save_settings()
+      ON ACTION clear
+         LET rec.notifications = clear()
       ON ACTION notificationpushed
          CALL handle_notification()
       ON ACTION notificationselected
@@ -74,13 +76,15 @@ FUNCTION load_settings() RETURNS ()
 END FUNCTION
 
 FUNCTION save_settings() RETURNS ()
-    DEFINE fn, data STRING,
+    DEFINE fn STRING,
+           data util.JSONObject,
            ch base.Channel
-    LET data = util.JSON.stringify( rec )
+    LET data = util.JSONObject.fromFGL(rec)
+    CALL data.remove("notifications")
     LET fn = get_settings_file()
     LET ch = base.Channel.create()
     CALL ch.openFile(fn,"w")
-    CALL ch.writeLine(data)
+    CALL ch.writeLine(data.toString())
     CALL ch.close()
 END FUNCTION
 
@@ -91,14 +95,14 @@ FUNCTION register(
     DEFINE registration_token STRING
     TRY
         CALL ui.Interface.frontCall(
-                "mobile", "registerForRemoteNotifications", 
+                "mobile", "registerForRemoteNotifications",
                 [ ], [ registration_token ] )
         IF tm_command( "register", notification_type,
                        registration_token, app_user, 0 ) < 0 THEN
            RETURN NULL
         END IF
     CATCH
-        MESSAGE "Registration failed!."
+        ERROR "Registration failed!"
         RETURN NULL
     END TRY
     MESSAGE "Registration succeeded!"
@@ -116,13 +120,25 @@ FUNCTION unregister(
     END IF
     TRY
         CALL ui.Interface.frontCall(
-                "mobile", "unregisterFromRemoteNotifications", 
+                "mobile", "unregisterFromRemoteNotifications",
                 [ ], [ ] )
     CATCH
-        MESSAGE "Un-registration failed."
+        ERROR "Un-registration failed!"
         RETURN
     END TRY
-    MESSAGE "Un-registration succeeded"
+    MESSAGE "Un-registration succeeded!"
+END FUNCTION
+
+FUNCTION clear() RETURNS STRING
+    DEFINE res STRING
+    TRY
+        CALL ui.Interface.frontCall(
+                "mobile", "clearNotifications",
+                [ ], [ res ] )
+    CATCH
+        ERROR "Clear notifications failed!"
+    END TRY
+    RETURN res
 END FUNCTION
 
 FUNCTION tm_command(
@@ -157,7 +173,7 @@ FUNCTION tm_command(
         CALL req.doTextRequest(json_obj.toString())
         LET resp = req.getResponse()
         IF resp.getStatusCode() != 200 THEN
-           MESSAGE SFMT("HTTP Error (%1) %2",
+           ERROR SFMT("HTTP Error (%1) %2",
                       resp.getStatusCode(),
                       resp.getStatusDescription())
            RETURN -2
@@ -253,7 +269,7 @@ FUNCTION handle_notification() RETURNS ()
                     SFMT("%1(%2): %3[%4]", x, CURRENT HOUR TO SECOND, info, other_info)
         END FOR
     CATCH
-        MESSAGE "Could not extract notification info"
+        ERROR "Could not extract notification info"
     END TRY
 END FUNCTION
 
@@ -273,6 +289,6 @@ FUNCTION handle_notification_selection() RETURNS ()
                          notif_array[i].id, notif_array[i].type)
         END FOR
     CATCH
-        MESSAGE "Could not get selected notifications info"
+        ERROR "Could not get selected notifications info"
     END TRY
 END FUNCTION

@@ -29,7 +29,7 @@ The token maintainer must be started first, to collect device registration reque
 * GNU Make 4.3+
 * Apache Maven 3.9.5+
 * Genero BDL 4.01.05+
-* Genero Mobile for Android 4.01.06+
+* Genero Mobile for Android 4.01.07+ (with GMA-1978 fix)
 * Genero Mobile for iOS 4.01.04+
 * Genero Browser Client 4.01.12+
 * Genero Desktop Client 4.01.06+
@@ -98,8 +98,9 @@ $ make package_gma
 Go to the `server` sub-directory.
 
 In fcm_push_server.4gl:
-* Define the FCM_SERVER_KEY constant with the FCM Server Key. For testing, you can also
-define the FCM_SERVER_KEY environment variable.
+* Define the FCM_PROJECT_NUM constant with the FCM Project Number.
+* Define the FCM_APP_CRED constant with the path to the file containing
+the private key generated for your FCM project.
 
 In token_maintainer.4gl:
 * Define the DEFAULT_PORT constant with the TCP port number to be used in FGLAPPSERVER.

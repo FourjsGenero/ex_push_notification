@@ -4,20 +4,22 @@ END
 LAYOUT (TEXT="FCM push server program")
 GRID
 {
-Server key:   [f1                                    ]
-Message:      [f2                                    ]
-User data:    [f3                                    ]
-              [b1                                    ]
-Result:       [f4                                    ]
-              [                                      ]
-              [                                      ]
+Project Num:  [f1                       ]
+Access Token: [f2                                      ]
+Message:      [f3                                      ]
+User data:    [f4                                      ]
+              [b1                                      ]
+Result:       [f5                                      ]
+              [                                        ]
+              [                                        ]
 }
 END
 END
 ATTRIBUTES
-EDIT f1 = FORMONLY.server_key, SCROLL;
-EDIT f2 = FORMONLY.msg_title, SCROLL;
-EDIT f3 = FORMONLY.user_data, SCROLL;
+EDIT f1 = FORMONLY.project_num, SCROLL, NOENTRY;
+EDIT f2 = FORMONLY.access_token, SCROLL, NOENTRY;
+EDIT f3 = FORMONLY.msg_title, SCROLL;
+EDIT f4 = FORMONLY.user_data, SCROLL;
+TEXTEDIT f5 = FORMONLY.info, STRETCH=BOTH;
 BUTTON b1: send_notification, TEXT="Send";
-TEXTEDIT f4 = FORMONLY.info, STRETCH=BOTH;
 END

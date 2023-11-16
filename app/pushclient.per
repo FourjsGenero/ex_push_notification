@@ -9,7 +9,7 @@ GRID
 [l2   |tmh      |l3|tmp ]
 [l4     |nts            ]
 [l5     |unm            ]
-[b1         |b2         ]
+[b1     |b2     |b3     ]
 [l6                     ]
 [rt                     ]
 [                       ]
@@ -35,6 +35,7 @@ EDIT nts = FORMONLY.notification_type, NOENTRY;
 EDIT unm = FORMONLY.user_name;
 BUTTON b1: register, TEXT="Register";
 BUTTON b2: unregister, TEXT="Unregister";
+BUTTON b3: clear, TEXT="Clear";
 TEXTEDIT rt = FORMONLY.registration_token, NOENTRY;
 TEXTEDIT nl = FORMONLY.notifications, NOENTRY, STRETCH=BOTH;
 END
