@@ -39,7 +39,7 @@ MAIN
          LET rec.registration_token = NULL
          CALL save_settings()
       ON ACTION clear
-         LET rec.notifications = clear()
+         CALL clear_notifications()
       ON ACTION notificationpushed
          CALL handle_notification()
       ON ACTION notificationselected
@@ -129,16 +129,16 @@ FUNCTION unregister(
     MESSAGE "Un-registration succeeded!"
 END FUNCTION
 
-FUNCTION clear() RETURNS STRING
+FUNCTION clear_notifications() RETURNS ()
     DEFINE res STRING
     TRY
         CALL ui.Interface.frontCall(
                 "mobile", "clearNotifications",
                 [ ], [ res ] )
+        LET rec.notifications = res
     CATCH
         ERROR "Clear notifications failed!"
     END TRY
-    RETURN res
 END FUNCTION
 
 FUNCTION tm_command(
@@ -253,7 +253,8 @@ FUNCTION handle_notification() RETURNS ()
             END IF
             LET x = x + 1
             LET rec.notifications = rec.notifications, "\n",
-                    SFMT("%1(%2): %3[%4]", x, CURRENT HOUR TO SECOND, info, other_info)
+                    SFMT("%1(%2): Notifiation received:\n %3[%4]",
+                         x, CURRENT HOUR TO SECOND, info, other_info)
         END FOR
     CATCH
         ERROR "Could not extract notification info"
@@ -265,15 +266,15 @@ FUNCTION handle_notification_selection() RETURNS ()
                id STRING,
                type STRING
            END RECORD,
-           i INTEGER
+           x INTEGER
     TRY
         CALL ui.Interface.frontCall("mobile", "getLastNotificationInteractions",
                                     [], [notif_array] )
-        LET rec.notifications = NULL
-        FOR i=1 TO notif_array.getLength()
+        FOR x=1 TO notif_array.getLength()
             LET rec.notifications = rec.notifications, "\n",
-                    SFMT("%1(%2): ID=%3, TYPE=%4", i, CURRENT HOUR TO SECOND,
-                         notif_array[i].id, notif_array[i].type)
+                    SFMT("%1(%2): Notification selected:\n ID=%3, TYPE=%4",
+                         x, CURRENT HOUR TO SECOND,
+                         notif_array[x].id, notif_array[x].type)
         END FOR
     CATCH
         ERROR "Could not get selected notifications info"
