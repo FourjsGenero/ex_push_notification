@@ -217,7 +217,7 @@ FUNCTION handle_notification() RETURNS ()
            notif_item util.JSONObject,
            notif_data util.JSONObject,
            aps_record util.JSONObject,
-           info, other_info STRING,
+           id, info, other_info STRING,
            i, x INTEGER
     CALL ui.Interface.frontCall(
               "mobile", "getRemoteNotifications",
@@ -245,6 +245,7 @@ FUNCTION handle_notification() RETURNS ()
             ELSE
                -- Try FCM msg format
                LET notif_data = notif_item.get("data")
+               LET id = notif_data.get("id")
                LET info = notif_data.get("content")
                LET other_info = notif_data.get("other_info")
             END IF
@@ -253,8 +254,8 @@ FUNCTION handle_notification() RETURNS ()
             END IF
             LET x = x + 1
             LET rec.notifications = rec.notifications, "\n",
-                    SFMT("%1(%2): Notifiation received:\n %3[%4]",
-                         x, CURRENT HOUR TO SECOND, info, other_info)
+                    SFMT("%1(%2): Notifiation received: ID=%3\n %4[%5]",
+                         x, CURRENT HOUR TO SECOND, id, info, other_info)
         END FOR
     CATCH
         ERROR "Could not extract notification info"
@@ -272,7 +273,7 @@ FUNCTION handle_notification_selection() RETURNS ()
                                     [], [notif_array] )
         FOR x=1 TO notif_array.getLength()
             LET rec.notifications = rec.notifications, "\n",
-                    SFMT("%1(%2): Notification selected:\n ID=%3, TYPE=%4",
+                    SFMT("%1(%2): Notification selected: ID=%3 TYPE=%4",
                          x, CURRENT HOUR TO SECOND,
                          notif_array[x].id, notif_array[x].type)
         END FOR
