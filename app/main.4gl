@@ -237,6 +237,7 @@ FUNCTION handle_notification() RETURNS ()
             -- Try APNs msg format
             LET aps_record = notif_item.get("aps")
             IF aps_record IS NOT NULL THEN
+               LET id = notif_item.get("id")
                LET info = aps_record.get("alert")
                LET notif_data = notif_item.get("custom_data")
                IF notif_data IS NOT NULL THEN
