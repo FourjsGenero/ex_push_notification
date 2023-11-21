@@ -189,6 +189,16 @@ and the private key (decrypted) .crt .pem file.
 For more details, see
 [Genero documentation section about APNS SSL certificates](https://www.4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_gws_ComAPNS_security.html)
 
+Define the APNS_APPID environment variable:
+```
+$ export APNS_APPID=com.fourjs.pushdemo
+```
+
+Define the APNS_CERTIF environment variable with the private key:
+```
+$ export APNS_CERTIF=myapp-key.pem
+```
+
 Create your fglprofile file, define FGLPROFILE to point to this file.
 
 ```
