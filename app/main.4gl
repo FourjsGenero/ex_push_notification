@@ -226,7 +226,7 @@ FUNCTION handle_notification() RETURNS ()
         IF notif_list.trimLeft() NOT LIKE "[%" THEN -- GBC-3043 Workaround
            LET notif_list = "[ ", notif_list, " ]"
         END IF
-        LET notif_array = util.JSONArray.parse(notif_list)
+        LET notif_array = util.JSONArray.parse(NVL(notif_list,"[]"))
         IF notif_array.getLength() > 0 THEN
            CALL setup_badge_number(notif_array.getLength())
         END IF
