@@ -2,7 +2,8 @@
 
 ## Description
 
-This demo shows how to implement push notification with Firebase Cloud Messaging (FCM) and with Apple Push Notifications (APNs).
+This demo shows how to implement push notification with Firebase Cloud Messaging (FCM)
+and with Apple Push Notifications (APNs).
 
 The sources of this demo have been used to write the
  [Genero push notification section of the documentation](http://4js.com/online_documentation/fjs-fgl-manual-html/#fgl-topics/c_fgl_mobile_push_notifications.html)
