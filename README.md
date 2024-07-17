@@ -29,12 +29,9 @@ The token maintainer must be started first, to collect device registration reque
 * Java 17+
 * GNU Make 4.3+
 * Apache Maven 3.9.5+
-* Genero BDL 4.01.05+
-* Genero Mobile for Android 4.01.07+ (with GMA-1978 fix)
-* Genero Mobile for iOS 4.01.04+
-* Genero Browser Client 4.01.12+
-* Genero Desktop Client 4.01.06+
-* Genero Studio 4.01.01+
+* Latest Genero version
+* Latest Genero Mobile for Android (with GMA-1978 fix)
+* Latest Genero Mobile for iOS
 
 ## Using Firebase Cloud Messaging
 
